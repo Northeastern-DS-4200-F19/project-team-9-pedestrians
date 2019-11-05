@@ -1,4 +1,24 @@
-
+/**
+ * Returns a color based on the route input
+ */
+function colorMap(route) {
+  switch(route) {
+    case "Tremont":
+      return "#6B4D40";
+    case "Jaywalk":
+      return "#9B2990";
+    case "Crosswalk":
+      return "#7165BC";
+    case "Flashing Signal":
+      return "#569CDD";
+    case "PHB":
+      return "#8FF7F5";
+  }
+}
+/**
+ * Draws our Walking Travel Time Visualization
+ * @param data - the data read from avg_travel_times.csv
+ */
 function travelTimeGraph(data) {
   console.log(data);
 
@@ -8,7 +28,7 @@ function travelTimeGraph(data) {
     left: 30,
     right: 30
   };
-  var width = 821;
+  var width = 900;
   var height = 520;
 
   var maxTime = d3.max(data, function(d){return d.seconds});
@@ -18,26 +38,34 @@ function travelTimeGraph(data) {
     .attr('width', width)
     .attr('height', height);
 
+  let travelWidth = width/2;
+  let travelHeight = height/2;
+
+  var travelTimeChart = svg.append('g')
+    .attr('width', travelWidth)
+    .attr('height', travelHeight);
+
   // Defining our axes
   var yScale = d3.scaleLinear()
     .domain([0, maxTime])
-    .range([height-margin.bottom, margin.top]);
+    .range([height-margin.bottom, height-travelHeight+margin.top]);
 
   var xScale = d3.scaleBand()
-    .range([margin.left, width - margin.right])
+    .range([width-travelWidth+margin.left, width-margin.right])
     .domain(data.map(function(d){return d.intersection}))
     .padding(0.05);
 
   // DRAW the axes
-  svg.append('g')
+  travelTimeChart.append('g')
     .attr('class', 'x axis')
     .attr('transform', `translate(0,${height-margin.bottom})`)
-    .call(d3.axisBottom(xScale));
+    .call(d3.axisBottom(xScale))
+    .selectAll("text")
+    .remove();
 
-
-  svg.append('g')
+  travelTimeChart.append('g')
     .attr('class', 'y axis')
-    .attr('transform', `translate(${margin.left},0)`)
+    .attr('transform', `translate(${width-travelWidth+margin.left},0)`)
     .call(d3.axisLeft(yScale));
 
   // DRAW the histogram
@@ -48,7 +76,7 @@ function travelTimeGraph(data) {
     .attr("x", function(d){return xScale(d.intersection);})
     .attr("y", function(d){return yScale(d.seconds);})
     .attr("width", xScale.bandwidth())
-    .attr('fill','steelblue')
+    .attr('fill',function(d){return colorMap(d.intersection)})
     .attr("height", function(d){
       return height-margin.bottom-yScale(d.seconds);
     });
