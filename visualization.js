@@ -1,3 +1,24 @@
+/**
+ * Returns a color based on the route input
+ */
+function colorMap(route) {
+  switch(route) {
+    case "Tremont":
+      return "#6B4D40";
+    case "Jaywalk":
+      return "#9B2990";
+    case "Crosswalk":
+      return "#7165BC";
+    case "Flashing Signal":
+      return "#569CDD";
+    case "PHB":
+      return "#8FF7F5";
+  }
+}
+/**
+ * Draws our Walking Travel Time Visualization
+ * @param data - the data read from avg_travel_times.csv
+ */
 function travelTimeGraph(data) {
   console.log(data);
 
@@ -40,11 +61,7 @@ function travelTimeGraph(data) {
     .attr('transform', `translate(0,${height-margin.bottom})`)
     .call(d3.axisBottom(xScale))
     .selectAll("text")
-    .style("text-anchor", "end")
-    .attr("dx", "-.8em")
-    .attr("dy", ".15em")
-    .attr("transform", "rotate(-65)");
-
+    .remove();
 
   travelTimeChart.append('g')
     .attr('class', 'y axis')
@@ -59,7 +76,7 @@ function travelTimeGraph(data) {
     .attr("x", function(d){return xScale(d.intersection);})
     .attr("y", function(d){return yScale(d.seconds);})
     .attr("width", xScale.bandwidth())
-    .attr('fill','steelblue')
+    .attr('fill',function(d){return colorMap(d.intersection)})
     .attr("height", function(d){
       return height-margin.bottom-yScale(d.seconds);
     });
