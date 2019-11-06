@@ -1,3 +1,14 @@
+/** * * * * * * CONSTANTS * * * * */
+const width = 900;
+const height = 520;
+const margin = {
+  top: 40,
+  bottom: 30,
+  left: 30,
+  right: 30
+};
+
+
 /**
  * Returns a color based on the route input
  */
@@ -21,24 +32,19 @@ function colorMap(route) {
  * @param data - the data read from avg_travel_times.csv
  */
 function travelTimeGraph(data) {
-  console.log(data);
 
-  const margin = {
-    top: 40,
-    bottom: 30,
-    left: 30,
-    right: 30
-  };
-  const width = 900;
-  const height = 520;
-
+  // define local variables relevant to this viz
+  let travelWidth = width/2;
+  let travelHeight = height/2;
   let maxTime = d3.max(data, function(d){return d.seconds});
-  console.log(maxTime);
 
+  // get the parent SVG
   let svg = d3.select('#vis-svg')
     .attr('width', width)
     .attr('height', height)
     .attr('border', 1);
+
+  // TEMPORARY BORDER FOR VISUAL GUIDE
   let borderPath = svg.append("rect")
     .attr("x", 0)
     .attr("y", 0)
@@ -48,9 +54,8 @@ function travelTimeGraph(data) {
     .style("fill", "none")
     .style("stroke-width", 1);
 
-  let travelWidth = width/2;
-  let travelHeight = height/2;
 
+  // create a local grouping that will contain this entire viz
   let travelTimeChart = svg.append('g')
     .attr('width', travelWidth)
     .attr('height', travelHeight)
@@ -116,6 +121,22 @@ function travelTimeGraph(data) {
 
 }
 
+/**
+ * Draw a map of chester park given the external SVG
+ */
+function routeMap() {
+  console.log("map!");
+  let mapHeight = height/2;
+  let mapWidth = width/2 - 15;
+
+  d3.select('#map-svg')
+    .attr('width', mapWidth)
+    .attr('height', mapHeight);
+
+  let map = d3.select('#chester-map')
+    .attr('transform', `translate(0,${mapHeight})`)
+}
+
 /** reads the csv file with walking travel time, waits for it to finish,
  * and then calls a method to draw the bar graph
  */
@@ -126,3 +147,8 @@ d3.csv('data/avg_travel_times.csv', function(d) {
     seconds: +d.Average_Travel_Time
   }
 }).then(travelTimeGraph);
+
+/**
+ * Draw the map of chester square with possible routes overlaid
+ */
+routeMap();
