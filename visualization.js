@@ -125,16 +125,41 @@ function travelTimeGraph(data) {
  * Draw a map of chester park given the external SVG
  */
 function routeMap() {
-  console.log("map!");
   let mapHeight = height/2;
   let mapWidth = width/2 - 15;
+
+  let lineFunction = d3.line()
+    .x(function(d) {return d.x;})
+    .y(function(d) {return d.y;});
 
   d3.select('#map-svg')
     .attr('width', mapWidth)
     .attr('height', mapHeight);
 
   let map = d3.select('#chester-map')
-    .attr('transform', `translate(0,${mapHeight})`)
+    .attr('transform', `translate(0,${mapHeight})`);
+
+  // define each walking path
+  let pathData = {
+    'Tremont': [{x:mapWidth/2 - 4, y:mapHeight/2 + 20},{x:mapWidth/2 - 160, y:mapHeight/2+20},
+      {x:mapWidth/2-160, y:mapHeight/2-35}, {x:mapWidth/2-4, y:mapHeight/2-35}],
+    'Jaywalk': [{x:mapWidth/2-40, y:mapHeight/2+15}, {x:mapWidth/2-40, y:mapHeight/2-30}],
+    'Crosswalk': [{x:mapWidth/2-10, y:mapHeight/2+15}, {x:mapWidth/2-10, y:mapHeight/2-30}],
+    'Flashing Signal': [{x:mapWidth/2-5, y:mapHeight/2+15}, {x:mapWidth/2-5, y:mapHeight/2-30}],
+    'PHB': [{x:mapWidth/2, y:mapHeight/2+15}, {x:mapWidth/2, y:mapHeight/2-30}]
+  };
+
+  // draw each walking path
+  for (let path in pathData) {
+    map.append('path')
+      .datum(pathData[path])
+      .attr('d', lineFunction)
+      .attr('stroke', function(){return colorMap(path)})
+      .attr('stroke-width', 2)
+      .attr('fill', 'none')
+      .style('stroke-dasharray', ('5, 5, 5, 5, 5, 5, 10, 5, 10, 5, 10, 5'))
+  }
+
 }
 
 /** reads the csv file with walking travel time, waits for it to finish,
