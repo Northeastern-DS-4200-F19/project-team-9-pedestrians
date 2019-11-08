@@ -20,11 +20,31 @@ function colorMap(route) {
       return "#8A4DCC";
     case "Crosswalk":
       return "#5EB2D1";
-    case "Flashing Signal":
+    case "FlashingSignal":
       return "#4AE2BA";
     case "PHB":
       return "#30FF97";
   }
+}
+
+function handleMouseOver(d, i) {
+  d3.selectAll('.'+d.intersection).each(function() {
+    if (this.tagName.toLowerCase() === 'rect') {
+      d3.select(this).attr('fill', 'yellow');
+    } else if (this.tagName.toLowerCase() === 'path') {
+      d3.select(this).attr('stroke', 'yellow');
+    }
+  })
+}
+
+function handleMouseOut(d, i) {
+  d3.selectAll('.'+d.intersection).each(function() {
+    if (this.tagName.toLowerCase() === 'rect') {
+      d3.select(this).attr('fill', colorMap(d.intersection));
+    } else if (this.tagName.toLowerCase() === 'path') {
+      d3.select(this).attr('stroke', colorMap(d.intersection));
+    }
+  })
 }
 
 /**
@@ -95,7 +115,10 @@ function travelTimeGraph(data) {
     .attr('fill',function(d){return colorMap(d.intersection)})
     .attr("height", function(d){
       return height-margin.bottom-yScale(d.seconds);
-    });
+    })
+    .attr('class', function(d){return d.intersection})
+    .on('mouseover', handleMouseOver)
+    .on('mouseout', handleMouseOut);
 
   // Add a title and axis labels!
   travelTimeChart.append('text')
@@ -145,7 +168,7 @@ function routeMap() {
       {x:mapWidth/2-160, y:mapHeight/2-35}, {x:mapWidth/2-4, y:mapHeight/2-35}],
     'Jaywalk': [{x:mapWidth/2-40, y:mapHeight/2+15}, {x:mapWidth/2-40, y:mapHeight/2-30}],
     'Crosswalk': [{x:mapWidth/2-10, y:mapHeight/2+15}, {x:mapWidth/2-10, y:mapHeight/2-30}],
-    'Flashing Signal': [{x:mapWidth/2-5, y:mapHeight/2+15}, {x:mapWidth/2-5, y:mapHeight/2-30}],
+    'FlashingSignal': [{x:mapWidth/2-5, y:mapHeight/2+15}, {x:mapWidth/2-5, y:mapHeight/2-30}],
     'PHB': [{x:mapWidth/2, y:mapHeight/2+15}, {x:mapWidth/2, y:mapHeight/2-30}]
   };
 
@@ -157,8 +180,17 @@ function routeMap() {
       .attr('stroke', function(){return colorMap(path)})
       .attr('stroke-width', 2)
       .attr('fill', 'none')
+      .attr('class', path)
       .style('stroke-dasharray', ('5, 5, 5, 5, 5, 5, 10, 5, 10, 5, 10, 5'))
   }
+
+  map.append('text')
+    .attr('x', mapWidth/2)
+    .attr('y', 20)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '14px')
+    .style('text-decoration', 'underline')
+    .text('Walking Routes');
 
 }
 
