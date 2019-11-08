@@ -1,56 +1,72 @@
+/** * * * * * * CONSTANTS * * * * */
+const width = 900;
+const height = 520;
+const margin = {
+  top: 40,
+  bottom: 30,
+  left: 30,
+  right: 30
+};
+
+
 /**
  * Returns a color based on the route input
  */
 function colorMap(route) {
   switch(route) {
     case "Tremont":
-      return "#6B4D40";
+      return "#AF2BC6";
     case "Jaywalk":
-      return "#9B2990";
+      return "#8A4DCC";
     case "Crosswalk":
-      return "#7165BC";
+      return "#5EB2D1";
     case "Flashing Signal":
-      return "#569CDD";
+      return "#4AE2BA";
     case "PHB":
-      return "#8FF7F5";
+      return "#30FF97";
   }
 }
+
 /**
  * Draws our Walking Travel Time Visualization
  * @param data - the data read from avg_travel_times.csv
  */
 function travelTimeGraph(data) {
-  console.log(data);
 
-  var margin = {
-    top: 40,
-    bottom: 30,
-    left: 30,
-    right: 30
-  };
-  var width = 900;
-  var height = 520;
-
-  var maxTime = d3.max(data, function(d){return d.seconds});
-  console.log(maxTime);
-
-  var svg = d3.select('#vis-svg')
-    .attr('width', width)
-    .attr('height', height);
-
+  // define local variables relevant to this viz
   let travelWidth = width/2;
   let travelHeight = height/2;
+  let maxTime = d3.max(data, function(d){return d.seconds});
 
-  var travelTimeChart = svg.append('g')
+  // get the parent SVG
+  let svg = d3.select('#vis-svg')
+    .attr('width', width)
+    .attr('height', height)
+    .attr('border', 1);
+
+  // TEMPORARY BORDER FOR VISUAL GUIDE
+  let borderPath = svg.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("height", height)
+    .attr("width", width-20)
+    .style("stroke", "black")
+    .style("fill", "none")
+    .style("stroke-width", 1);
+
+
+  // create a local grouping that will contain this entire viz
+  let travelTimeChart = svg.append('g')
     .attr('width', travelWidth)
-    .attr('height', travelHeight);
+    .attr('height', travelHeight)
+    .attr('transform', `translate(0,0)`);
 
   // Defining our axes
-  var yScale = d3.scaleLinear()
+  let yScale = d3.scaleLinear()
     .domain([0, maxTime])
     .range([height-margin.bottom, height-travelHeight+margin.top]);
 
-  var xScale = d3.scaleBand()
+  let xScale = d3.scaleBand()
     .range([width-travelWidth+margin.left, width-margin.right])
     .domain(data.map(function(d){return d.intersection}))
     .padding(0.05);
@@ -69,7 +85,7 @@ function travelTimeGraph(data) {
     .call(d3.axisLeft(yScale));
 
   // DRAW the histogram
-  var bar= svg.selectAll('rect')
+  let bar = travelTimeChart.selectAll('rect')
     .data(data)
     .enter()
     .append('rect')
@@ -81,10 +97,49 @@ function travelTimeGraph(data) {
       return height-margin.bottom-yScale(d.seconds);
     });
 
+  // Add a title and axis labels!
+  travelTimeChart.append('text')
+    .attr('x', width-travelWidth/2)
+    .attr('y', height-travelHeight+40)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '14px')
+    .style('text-decoration', 'underline')
+    .text('Average Walking Time');
+  travelTimeChart.append('text')
+    .attr('x', width-travelWidth/2)
+    .attr('y', height-10)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '14px')
+    .text("Route");
+  travelTimeChart.append('text')
+    .attr('x', width-travelWidth)
+    .attr('y', height-travelHeight/2)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '14px')
+    .attr('transform', `rotate(-90, ${width-travelWidth}, ${height-travelHeight/2})`)
+    .text("Seconds");
+
 }
 
-// reads the csv file with walking travel time, waits for it to finish,
-// and then calls a method to draw the bar graph
+/**
+ * Draw a map of chester park given the external SVG
+ */
+function routeMap() {
+  console.log("map!");
+  let mapHeight = height/2;
+  let mapWidth = width/2 - 15;
+
+  d3.select('#map-svg')
+    .attr('width', mapWidth)
+    .attr('height', mapHeight);
+
+  let map = d3.select('#chester-map')
+    .attr('transform', `translate(0,${mapHeight})`)
+}
+
+/** reads the csv file with walking travel time, waits for it to finish,
+ * and then calls a method to draw the bar graph
+ */
 d3.csv('data/avg_travel_times.csv', function(d) {
   // formats our data objects
   return {
@@ -92,3 +147,8 @@ d3.csv('data/avg_travel_times.csv', function(d) {
     seconds: +d.Average_Travel_Time
   }
 }).then(travelTimeGraph);
+
+/**
+ * Draw the map of chester square with possible routes overlaid
+ */
+routeMap();
