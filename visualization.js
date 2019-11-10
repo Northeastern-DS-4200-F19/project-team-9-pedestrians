@@ -7,6 +7,9 @@ const margin = {
   left: 30,
   right: 30
 };
+const tooltip = d3.select('body').append('div')
+  .attr('class', 'tooltip')
+  .style('display', 'none');
 
 
 /**
@@ -27,7 +30,8 @@ function colorMap(route) {
   }
 }
 
-function handleMouseOver(d, i) {
+function handleMouseOver(d) {
+  console.log(d);
   d3.selectAll('.'+d.intersection).each(function() {
     if (this.tagName.toLowerCase() === 'rect') {
       d3.select(this).attr('fill', 'yellow');
@@ -35,9 +39,11 @@ function handleMouseOver(d, i) {
       d3.select(this).attr('stroke', 'yellow');
     }
   })
+
+
 }
 
-function handleMouseOut(d, i) {
+function handleMouseOut(d) {
   d3.selectAll('.'+d.intersection).each(function() {
     if (this.tagName.toLowerCase() === 'rect') {
       d3.select(this).attr('fill', colorMap(d.intersection));
@@ -45,6 +51,12 @@ function handleMouseOut(d, i) {
       d3.select(this).attr('stroke', colorMap(d.intersection));
     }
   })
+}
+
+function handleMouseMove() {
+  tooltip
+    .style("left", (d3.event.pageX - 34) + "px")
+    .style("top", (d3.event.pageY - 12) + "px");
 }
 
 /**
@@ -58,11 +70,13 @@ function travelTimeGraph(data) {
   let travelHeight = height/2;
   let maxTime = d3.max(data, function(d){return d.seconds});
 
+
   // get the parent SVG
   let svg = d3.select('#vis-svg')
     .attr('width', width)
     .attr('height', height)
     .attr('border', 1);
+
 
   // TEMPORARY BORDER FOR VISUAL GUIDE
   let borderPath = svg.append("rect")
@@ -80,6 +94,8 @@ function travelTimeGraph(data) {
     .attr('width', travelWidth)
     .attr('height', travelHeight)
     .attr('transform', `translate(0,0)`);
+
+
 
   // Defining our axes
   let yScale = d3.scaleLinear()
@@ -117,8 +133,23 @@ function travelTimeGraph(data) {
       return height-margin.bottom-yScale(d.seconds);
     })
     .attr('class', function(d){return d.intersection})
-    .on('mouseover', handleMouseOver)
-    .on('mouseout', handleMouseOut);
+    .on('mouseover', function(d){
+      handleMouseOver(d);
+      let time = +parseFloat(d.seconds).toFixed(3);
+
+      tooltip
+        .style('display', 'inline-block')
+        .html('<strong>' + d.intersection + '</strong>' + '</br>' + time + ' sec')
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on('mouseout', function(d){
+      handleMouseOut(d);
+      tooltip.style('display', 'none')
+    })
+    .on('mousemove', function(d) {
+      handleMouseMove(d);
+    });
 
   // Add a title and axis labels!
   travelTimeChart.append('text')
@@ -181,6 +212,22 @@ function routeMap() {
       .attr('stroke-width', 2)
       .attr('fill', 'none')
       .attr('class', path)
+      .on('mouseover', function(){
+        handleMouseOver({intersection: path});
+
+        tooltip
+          .style('display', 'inline-block')
+          .html('<strong>' + path + '</strong>')
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on('mouseout', function(d){
+        handleMouseOut({intersection: path});
+
+        tooltip
+          .style('display', 'none');
+      })
+      .on('mousemove', handleMouseMove)
       .style('stroke-dasharray', ('5, 5, 5, 5, 5, 5, 10, 5, 10, 5, 10, 5'))
   }
 
