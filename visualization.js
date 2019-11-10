@@ -193,6 +193,33 @@ function routeMap() {
   let map = d3.select('#chester-map')
     .attr('transform', `translate(0,${mapHeight})`);
 
+  let newCrossingData = {
+    'one': [{x:mapWidth/2-18, y:mapHeight/2-24}, {x:mapWidth/2+10, y:mapHeight/2-24},
+      {x:mapWidth/2+10, y:mapHeight/2-20}, {x:mapWidth/2-18, y:mapHeight/2-20},
+      {x:mapWidth/2-18, y:mapHeight/2-24}],
+    'two': [{x:mapWidth/2-18, y:mapHeight/2-16}, {x:mapWidth/2+10, y:mapHeight/2-16},
+      {x:mapWidth/2+10, y:mapHeight/2-12}, {x:mapWidth/2-18, y:mapHeight/2-12},
+      {x:mapWidth/2-18, y:mapHeight/2-16}],
+    'three': [{x:mapWidth/2-18, y:mapHeight/2-8}, {x:mapWidth/2+10, y:mapHeight/2-8},
+      {x:mapWidth/2+10, y:mapHeight/2-4}, {x:mapWidth/2-18, y:mapHeight/2-4},
+      {x:mapWidth/2-18, y:mapHeight/2-8}],
+    'four': [{x:mapWidth/2-18, y:mapHeight/2}, {x:mapWidth/2+10, y:mapHeight/2},
+      {x:mapWidth/2+10, y:mapHeight/2+4}, {x:mapWidth/2-18, y:mapHeight/2+4},
+      {x:mapWidth/2-18, y:mapHeight/2}],
+    'five': [{x:mapWidth/2-18, y:mapHeight/2+8}, {x:mapWidth/2+10, y:mapHeight/2+8},
+      {x:mapWidth/2+10, y:mapHeight/2+12}, {x:mapWidth/2-18, y:mapHeight/2+12},
+      {x:mapWidth/2-18, y:mapHeight/2+8}]
+  };
+
+  for (let path in newCrossingData) {
+    map.append('path')
+      .datum(newCrossingData[path])
+      .attr('d', lineFunction)
+      .attr('stroke', 'white')
+      .attr('stroke-wdith', 1)
+      .attr('fill', 'none')
+  }
+
   // define each walking path
   let pathData = {
     'Tremont': [{x:mapWidth/2 - 4, y:mapHeight/2 + 20},{x:mapWidth/2 - 160, y:mapHeight/2+20},
@@ -228,7 +255,7 @@ function routeMap() {
           .style('display', 'none');
       })
       .on('mousemove', handleMouseMove)
-      .style('stroke-dasharray', ('5, 5, 5, 5, 5, 5, 10, 5, 10, 5, 10, 5'))
+      // .style('stroke-dasharray', ('5, 5, 5, 5, 5, 5, 10, 5, 10, 5, 10, 5'))
   }
 
   map.append('text')
