@@ -39,17 +39,21 @@
       
       <h1>Motivation</h1>
       
-      <p>The motivation for this project is that this park is a large green space,
-        but getting from one side to the other takes way too long.
-        As a result, it is more practical for many people to jaywalk across the parks.
-        We wish to explore the data and find potential solutions to make it more practical to
-        cross the street safely.</p>
+      <p>
+        Chester Park is an amazing resource for the residents of the neighborhood. However, the bisection of
+        the park by Massachusetts Avenue makes it difficult for people to utilize both halves, effectively cutting
+        residents' green space in two. Additionally, the lack of any type of pedestrian crossing across Massachusetts
+        Avenue between Tremont Street and Shawmut Avenue creates an unsafe environment where pedestrians are
+        jaywalking across Massachusetts Avenue out of convenience. We aim to provide an exploration of pedestrian
+        behavior and crossing data in order to find potential solutions to make it more practical to cross
+        Massachusetts Avenue safely, and to give the residents of Chester Square easy access to the full extent of
+        the park.
+      </p>
 
       
       <h1>Visualization</h1>
       
-      <p><em>Include the interactive visualization as part of this page. Static example follows.</em></p>
-      
+
     </div>
     
     <!-- Your visualization here -->
@@ -95,6 +99,29 @@
       <h1>Visualization explanation</h1>
       
       <p><em>final visualization screenshots (PNG images), design justifications, UI walk-through, and linked presentation slides.</em></p>
+      <p>
+        Our visualization if based on three main views that highlight the major pro's and con's of each choice of
+        pedestrian crossing. The options we explore include leaving the road as is (pedestrians either cross at
+        Tremont/Shawmut, or jaywalk), adding a crosswalk in the middle of the block, adding a crosswalk with a rapid
+        flashing pedestrian sign, and building a Pedestrian Hybrid Beacon which is essentially a stoplight over a
+        crosswalk that would give pedestrians the right of way. For simplicity, we refer to the Tremont/Shawmut
+        option only as Tremont because the travel times, costs, and safety of each of those routes are the same, and
+        discussing them separately is redundant.
+        <br><br>
+        In the lower left corner we have a map of the neighborhood, with the five options for pedestrian crossing
+        laid out over it. This provides the user with a spatial awareness of the various intersections involved, as
+        well as the context of where the proposed pedestrian crossing options would be installed. Hovering over each
+        path with the mouse will provide a tooltip label to tell the user which route they are looking at, and will
+        highlight the encodings related to that route in the other graphs on the right side of the
+        visualization.<br><br>
+        The bottom right corner contains a bar graph that compares the average amount of time that it takes for a
+        pedestrian to walk the corresponding route on the map. The amount of time is encoded with length on an aligned
+        axis and the route that the bar is referring to is encoded with color. Comparing the length of the bars on an
+        aligned axis is the most effective way to relate that information to the user, and using the same colors to
+        encode the bars as we did the paths over the map (along with linked highlighting and tooltip labels) unites
+        the information from the map with the information from this bar graph.<br><br>
+        <strong>TODO: add writeup of third graph</strong>
+      </p>
 
       <h1>Data Analysis</h1>
       <p><em>Summary of data, data types, and data preprocessing.</em></p>
@@ -102,6 +129,7 @@
         without jaywalking is almost 11 times greater than crossing the street directly. (based on avg_travel_times.csv)
         However, the average time it takes to cross a crosswalk is quite similar to that of jaywalking, but is
         much safer. Even if people cross when there is no signal to walk, it is still safer than no crosswalk.
+        <br><br><strong>TODO: finish this</strong>
       </p>
 
 
@@ -109,19 +137,19 @@
 
       <h1>Task Analysis</h1>
 
-      <p>We wish to have an interactive map along with some graphs that interact with eachother.
-        The map will be used to demonstrate distance and give a spacial representation of the walking distance
-        between the parks and walking distance to get between them.
-      </p>
-      <p>
-        We also wish to show graphs that correspond to map and show how selecting something from the
-        graph affects the other graphs, as well as the map itself. This can be used to analyze the
-        potential options for adding paths for pedestrians in this location.
-      </p>
-
       <p><em>Summary of task table.</em></p>
 
       <p><em>Expectation: Clearly describes domain tasks, processes, goals and abstract tasks for domain problems.</em></p>
+
+      <p>We wish to have an interactive map along with some graphs that interact with eachother.
+        The map will be used to demonstrate distance and give a spacial representation of the walking distance
+        between the parks and walking distance to get between them.<br><br>
+        We also wish to show graphs that correspond to map and show how selecting something from the
+        graph affects the other graphs, as well as the map itself. This can be used to analyze the
+        potential options for adding paths for pedestrians in this location.<br><br>
+        <strong>TODO: finish and edit this</strong>
+      </p>
+
 
       <h1>Design Process</h1>
       
@@ -131,12 +159,16 @@
       Logical discussion of design choices grounded in theory from course.
       Discusses feedback from usability testing.</em></p>
 
+      <strong>TODO: DO THIS</strong>
+
 
       <h1>Conclusion</h1>
 
       <p><em>Short summary of work completed and areas for improvement/future-work.</em></p>
       
       <p><em>Expectation: Meaningfully wraps up project and has good future directions.</em></p>
+
+      <strong>TODO: DO THIS</strong>
 
       
       <h1>Acknowledgements</h1>
@@ -147,7 +179,7 @@
         <li><a href="https://d3js.org/">D3: Data-Driven Documents</a> by Mike Bostock.</li>
         <li><a href="https://codepo8.github.io/css-fork-on-github-ribbon/#">Pure CSS responsive "Fork me on GitHub" ribbon</a> by Chris Heilmann</li>
       </ul>
-      
+      <p><strong>TODO: edit this</strong></p>
     </div>
     
     <!-- Scripts at the end avoid need for dealing with async, defer, or onload event handlers -->
