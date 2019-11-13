@@ -11,6 +11,24 @@ const tooltip = d3.select('body').append('div')
   .attr('class', 'tooltip')
   .style('display', 'none');
 
+let selectedRoutes = [];
+
+function filter(d, data) {
+  let route = d.value;
+  let i = selectedRoutes.indexOf(route);
+
+  if (i === -1) {
+    selectedRoutes.push(route);
+  } else {
+    selectedRoutes.splice(i, 1);
+  }
+  d3.select('#walking-times').remove();
+  travelTimeGraph(data)
+
+}
+
+
+
 
 /**
  * Returns a color based on the route input
@@ -68,7 +86,26 @@ function travelTimeGraph(data) {
   // define local variables relevant to this viz
   let travelWidth = width/2;
   let travelHeight = height/2;
-  let maxTime = d3.max(data, function(d){return d.seconds});
+  let inputs = d3.selectAll('input')
+    .on('click', function(){
+      filter(this, data);
+    });
+
+  let filteredData = [];
+
+  if (selectedRoutes.length > 0) {
+    data.forEach(function(d){
+      if (selectedRoutes.indexOf(d.intersection) >= 0) {
+        filteredData.push(d);
+      }
+    })
+  } else {
+    filteredData = data;
+  }
+
+  console.log(filteredData);
+  let maxTime = d3.max(filteredData, function(d){return d.seconds});
+
 
 
   // get the parent SVG
@@ -93,7 +130,8 @@ function travelTimeGraph(data) {
   let travelTimeChart = svg.append('g')
     .attr('width', travelWidth)
     .attr('height', travelHeight)
-    .attr('transform', `translate(0,0)`);
+    .attr('transform', `translate(0,0)`)
+    .attr('id', 'walking-times');
 
 
 
@@ -104,7 +142,7 @@ function travelTimeGraph(data) {
 
   let xScale = d3.scaleBand()
     .range([width-travelWidth+margin.left, width-margin.right])
-    .domain(data.map(function(d){return d.intersection}))
+    .domain(filteredData.map(function(d){return d.intersection}))
     .padding(0.05);
 
   // DRAW the axes
@@ -122,7 +160,7 @@ function travelTimeGraph(data) {
 
   // DRAW the histogram
   let bar = travelTimeChart.selectAll('rect')
-    .data(data)
+    .data(filteredData)
     .enter()
     .append('rect')
     .attr("x", function(d){return xScale(d.intersection);})
