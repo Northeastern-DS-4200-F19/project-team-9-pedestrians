@@ -11,6 +11,8 @@ const tooltip = d3.select('body').append('div')
   .attr('class', 'tooltip')
   .style('display', 'none');
 
+
+/** FILTERING FUNCTIONS */
 let selectedRoutes = [];
 
 function filter(d, data) {
@@ -23,11 +25,10 @@ function filter(d, data) {
     selectedRoutes.splice(i, 1);
   }
   d3.select('#walking-times').remove();
+  d3.select('#paths').remove();
   travelTimeGraph(data)
-
+  routeMap();
 }
-
-
 
 
 /**
@@ -229,7 +230,9 @@ function routeMap() {
     .attr('height', mapHeight);
 
   let map = d3.select('#chester-map')
-    .attr('transform', `translate(0,${mapHeight})`);
+    .attr('transform', `translate(0,${mapHeight})`)
+    .append('g')
+    .attr('id', 'paths');
 
   let newCrossingData = {
     'one': [{x:mapWidth/2-18, y:mapHeight/2-24}, {x:mapWidth/2+10, y:mapHeight/2-24},
@@ -268,10 +271,22 @@ function routeMap() {
     'PHB': [{x:mapWidth/2, y:mapHeight/2+15}, {x:mapWidth/2, y:mapHeight/2-30}]
   };
 
+  let filteredPathData = {};
+
+  if (selectedRoutes.length === 0) {
+    filteredPathData = pathData;
+  } else {
+    for (let path in pathData) {
+      if (selectedRoutes.indexOf(path) >= 0) {
+        filteredPathData[path] = pathData[path];
+      }
+    }
+  }
+
   // draw each walking path
-  for (let path in pathData) {
+  for (let path in filteredPathData) {
     map.append('path')
-      .datum(pathData[path])
+      .datum(filteredPathData[path])
       .attr('d', lineFunction)
       .attr('stroke', function(){return colorMap(path)})
       .attr('stroke-width', 2)
