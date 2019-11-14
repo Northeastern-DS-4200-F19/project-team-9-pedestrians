@@ -26,7 +26,7 @@ function filter(d, data) {
   }
   d3.select('#walking-times').remove();
   d3.select('#paths').remove();
-  travelTimeGraph(data)
+  travelTimeGraph(data);
   routeMap();
 }
 
@@ -104,10 +104,7 @@ function travelTimeGraph(data) {
     filteredData = data;
   }
 
-  console.log(filteredData);
   let maxTime = d3.max(filteredData, function(d){return d.seconds});
-
-
 
   // get the parent SVG
   let svg = d3.select('#vis-svg')
@@ -193,7 +190,7 @@ function travelTimeGraph(data) {
   // Add a title and axis labels!
   travelTimeChart.append('text')
     .attr('x', width-travelWidth/2)
-    .attr('y', height-travelHeight+40)
+    .attr('y', height-travelHeight+35)
     .attr('text-anchor', 'middle')
     .style('font-size', '14px')
     .style('text-decoration', 'underline')
@@ -321,6 +318,106 @@ function routeMap() {
 
 }
 
+function keyAndFilter() {
+  let filterBox = d3.select('#vis-svg')
+    .append('g')
+    .attr('id', 'filter-box');
+
+  filterBox
+    .append('rect')
+    .attr('x', 15)
+    .attr('y', 5)
+    .attr('height', 120)
+    .attr('width', 210)
+    .style('stroke', 'black')
+    .style('stroke-width', 1)
+    .style('fill', 'none');
+
+  filterBox
+    .append('text')
+    .text('Filter')
+    .attr('x', 110)
+    .attr('y', 20)
+    .attr('text-anchor', 'middle')
+    .style('font-sie', '14px')
+    .style('text-decoration', 'underline');
+
+  let keyBox = d3.select('#vis-svg')
+    .append('g')
+    .attr('id', 'key-box');
+
+  keyBox
+    .append('rect')
+    .attr('x', 15)
+    .attr('y', 135)
+    .attr('height', 120)
+    .attr('width', 210)
+    .style('stroke', 'black')
+    .style('stroke-width', 1)
+    .style('fill', 'none');
+
+  keyBox
+    .append('text')
+    .text('Key')
+    .attr('x', 110)
+    .attr('y', 150)
+    .attr('text-anchor', 'middle')
+    .style('font-sie', '14px')
+    .style('text-decoration', 'underline');
+
+  let x = 20;
+  let startY = 165;
+
+  let categories = [];
+
+  d3.selectAll('.filterButton').each(function() {
+    categories.push(this.value);
+  });
+
+  categories.forEach(function(c) {
+    keyBox.append('rect')
+      .attr('class', function() {
+        console.log(c);
+        return c;
+      })
+      .attr('x', x)
+      .attr('y', startY)
+      .attr('height', 10)
+      .attr('width', 10)
+      .on('mouseover', function() {
+        handleMouseOver({intersection: c})
+      })
+      .on('mouseout', function(){
+        handleMouseOut({intersection: c});
+      })
+      .style('fill', colorMap(c));
+
+    keyBox.append('text')
+      .attr('x', x + 12)
+      .attr('y', startY + 8)
+      .attr('text-anchor', 'left')
+      .on('mouseover', function() {
+        handleMouseOver({intersection: c})
+      })
+      .on('mouseout', function(){
+        handleMouseOut({intersection: c});
+      })
+      .style('font-size', '14px')
+      .text(function() {
+        switch(c) {
+          case 'Tremont': return 'Tremont (Current Legal Route)';
+          case 'Jaywalk': return 'Jaywalking';
+          case 'Crosswalk': return 'High-Visibility Crosswalk';
+          case 'FlashingSignal': return 'Crosswalk with Flashing Signal';
+          case 'PHB': return 'Pedestrian Hybrid Beacon';
+        }
+      });
+
+    startY += 18;
+  })
+
+}
+
 /** reads the csv file with walking travel time, waits for it to finish,
  * and then calls a method to draw the bar graph
  */
@@ -336,3 +433,8 @@ d3.csv('data/avg_travel_times.csv', function(d) {
  * Draw the map of chester square with possible routes overlaid
  */
 routeMap();
+
+/**
+ * Draw the Filter Box and the viz key
+ */
+keyAndFilter();

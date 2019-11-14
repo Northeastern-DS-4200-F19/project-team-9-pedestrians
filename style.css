@@ -53,6 +53,9 @@ h1, h2, h3 {
 	bottom:1px;
 	top:auto;
 }
+foreignObject {
+	font-size: 12px;
+}
 @media screen and (min-width:800px){
 	#forkongithub{
 		position:fixed;
@@ -89,5 +92,3 @@ div.tooltip {
 	background: #ddd;
 	pointer-events: none;
 }
-
-div.tooltip
