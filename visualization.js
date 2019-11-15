@@ -391,7 +391,7 @@ function keyAndFilter() {
     .attr('x', 110)
     .attr('y', 150)
     .attr('text-anchor', 'middle')
-    .style('font-sie', '14px')
+    .style('font-size', '14px')
     .style('text-decoration', 'underline');
 
   let x = 20;
@@ -471,14 +471,15 @@ keyAndFilter();
 function violin() {
   // set the dimensions and margins of the graph
   var margin = {top: 10, right: 30, bottom: 30, left: 40},
-      width = 460 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+      width = 450 - margin.left - margin.right,
+      height = 250 - margin.top - margin.bottom;
 
   // append the svg object to the body of the page
   var svg = d3v4.select("#costsViz")
     .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
+    .attr('x', 440)
     .append("g")
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
@@ -491,6 +492,13 @@ function violin() {
       .domain([ 0,20000 ])          // Note that here the Y scale is set manually
       .range([height, 0])
     svg.append("g").call( d3.axisLeft(y) )
+
+    svg.append('text')
+      .text('Cost')
+      .attr('x', 160)
+      .attr('y', 10)
+      .style('font-size', '14px')
+      .style('text-decoration', 'underline');
 
     // Build and Show the X scale. It is a band scale like for a boxplot: each group has an dedicated RANGE on the axis. This range has a length of x.bandwidth
     var x = d3v4.scaleBand()
