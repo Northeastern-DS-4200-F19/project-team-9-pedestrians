@@ -51,6 +51,7 @@ function colorMap(route) {
 
 function handleMouseOver(d) {
   if (typeof d == "string") {
+    alert(d)
     d3.selectAll('.'+d).each(function() {
       if (this.tagName.toLowerCase() === 'rect') {
         d3.select(this).attr('fill', 'yellow');
@@ -79,17 +80,18 @@ function handleMouseOver(d) {
 }
 
 function handleMouseOut(d) {
-  if (typeof d == "string") {
-    d3.selectAll('.'+d).each(function() {
-      if (this.tagName.toLowerCase() === 'rect') {
-        d3.select(this).attr('fill', 'yellow');
-      } else if (this.tagName.toLowerCase() === 'path') {
-        d3.select(this).attr('stroke', 'yellow');
-      } else {
-        d3.select(this).attr('fill', 'yellow');
-      }
-    })
-  }
+  // if (typeof d == "string") {
+  //   d3.selectAll('.'+d).each(function() {
+  //     if (this.tagName.toLowerCase() === 'rect') {
+  //       d3.select(this).attr('fill', 'yellow');
+  //     } else if (this.tagName.toLowerCase() === 'path') {
+  //       d3.select(this).attr('stroke', 'yellow');
+  //     } else {
+  //       d3.select(this).attr('fill', 'yellow');
+  //     }
+  //   })
+  // }
+  alert(d.intersection)
   d3.selectAll('.'+d.intersection).each(function() {
     if (this.tagName.toLowerCase() === 'rect') {
       d3.select(this).attr('fill', colorMap(d.intersection));
@@ -102,10 +104,18 @@ function handleMouseOut(d) {
 }
 
 function handleMouseMove() {
-  tooltip
-    .style("left", (d3.event.pageX - 34) + "px")
-    .style("top", (d3.event.pageY - 12) + "px");
-}
+  
+  if (d3v4.event != null) {
+    tooltip
+      .style("left", (d3v4.event.pageX - 34) + "px")
+      .style("top", (d3v4.event.pageY - 12) + "px");
+  }
+  else {
+    tooltip
+      .style("left", (d3.event.pageX - 34) + "px")
+      .style("top", (d3.event.pageY - 12) + "px");
+    }
+  }
 
 /**
  * Draws our Walking Travel Time Visualization
