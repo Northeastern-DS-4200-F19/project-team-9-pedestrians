@@ -467,6 +467,7 @@ routeMap();
  * Draw the Filter Box and the viz key
  */
 keyAndFilter();
+
 function violin() {
   // set the dimensions and margins of the graph
   var margin = {top: 10, right: 30, bottom: 30, left: 40},
