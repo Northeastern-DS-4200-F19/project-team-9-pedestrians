@@ -51,9 +51,9 @@ function colorMap(route) {
 
 function handleMouseOver(d) {
   if (typeof d == "string") {
-    alert('this');
+    // alert('this');
     holder = d;
-    alert(holder);
+    // alert(holder);
     // alert(holder.1);
     d3.selectAll('.'+d).each(function() {
       if (this.tagName.toLowerCase() === 'rect') {
@@ -83,19 +83,19 @@ function handleMouseOver(d) {
 }
 
 function handleMouseOut(d) {
-  // if (typeof d == "string") {
-  //   d3.selectAll('.'+d).each(function() {
-  //     if (this.tagName.toLowerCase() === 'rect') {
-  //       d3.select(this).attr('fill', 'yellow');
-  //     } else if (this.tagName.toLowerCase() === 'path') {
-  //       d3.select(this).attr('stroke', 'yellow');
-  //     } else {
-  //       d3.select(this).attr('fill', 'yellow');
-  //     }
-  //   })
-  // }
-  alert(d);
-  holder = d
+  if (typeof holder == "string") {
+    d3.selectAll('.'+holder).each(function() {
+      if (this.tagName.toLowerCase() === 'rect') {
+        d3.select(this).attr('fill', colorMap(holder));
+      } else if (this.tagName.toLowerCase() === 'path') {
+        d3.select(this).attr('stroke', colorMap(holder));
+      } else {
+        d3.select(this).attr('fill', colorMap(holder));
+      }
+    })
+  }
+
+
   d3.selectAll('.'+d.intersection).each(function() {
     if (this.tagName.toLowerCase() === 'rect') {
       d3.select(this).attr('fill', colorMap(d.intersection));
@@ -105,6 +105,7 @@ function handleMouseOut(d) {
       d3.select('#'+d.intersection).attr('fill', colorMap(d.intersection));
     }
   })
+  holder = 0
 }
 
 function handleMouseMove() {
