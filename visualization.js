@@ -51,7 +51,10 @@ function colorMap(route) {
 
 function handleMouseOver(d) {
   if (typeof d == "string") {
-    alert(d)
+    alert('this');
+    holder = d;
+    alert(holder);
+    // alert(holder.1);
     d3.selectAll('.'+d).each(function() {
       if (this.tagName.toLowerCase() === 'rect') {
         d3.select(this).attr('fill', 'yellow');
@@ -91,7 +94,8 @@ function handleMouseOut(d) {
   //     }
   //   })
   // }
-  alert(d.intersection)
+  alert(d);
+  holder = d
   d3.selectAll('.'+d.intersection).each(function() {
     if (this.tagName.toLowerCase() === 'rect') {
       d3.select(this).attr('fill', colorMap(d.intersection));
