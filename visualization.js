@@ -51,10 +51,7 @@ function colorMap(route) {
 
 function handleMouseOver(d) {
   if (typeof d == "string") {
-    // alert('this');
     holder = d;
-    // alert(holder);
-    // alert(holder.1);
     d3.selectAll('.'+d).each(function() {
       if (this.tagName.toLowerCase() === 'rect') {
         d3.select(this).attr('fill', 'yellow');
