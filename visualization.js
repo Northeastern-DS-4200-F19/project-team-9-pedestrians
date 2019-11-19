@@ -12,9 +12,25 @@ const tooltip = d3.select('body').append('div')
   .style('display', 'none');
 const highlightColor = "#ffe100";
 
+/**
+ * Returns a color based on the route input
+ */
+function colorMap(route) {
+  switch(route) {
+    case "Tremont":
+      return "#5f4690";
+    case "Jaywalk":
+      return "#24967d";
+    case "Crosswalk":
+      return "#edad08";
+    case "FlashingSignal":
+      return "#b04256";
+    case "PHB":
+      return "#994e95";
+  }
+}
 
-
-/** FILTERING FUNCTIONS */
+/** * * * * * * * FILTERING FUNCTIONS * ** * * * * * * **/
 let selectedRoutes = [];
 
 function filter(d, data) {
@@ -35,78 +51,38 @@ function filter(d, data) {
 }
 
 
-/**
- * Returns a color based on the route input
- */
-function colorMap(route) {
-  switch(route) {
-    case "Tremont":
-      return "#5f4690";
-    case "Jaywalk":
-      return "#24967d";
-    case "Crosswalk":
-      return "#edad08";
-    case "FlashingSignal":
-      return "#b04256";
-    case "PHB":
-      return "#994e95";
-  }
-}
-
+/** * * * * * * * * MOUSE EVENTS * * * * * * * * * */
 function handleMouseOver(d) {
-  if (typeof d == "string") {
-    holder = d;
-    d3.selectAll('.'+d).each(function() {
-      if (this.tagName.toLowerCase() === 'rect') {
-        d3.select(this).attr('fill', highlightColor);
-      } else if (this.tagName.toLowerCase() === 'path') {
-        d3.select(this).attr('stroke', highlightColor);
-      }
-      else {
-        d3.select(this).attr('fill', highlightColor);
-      }
-    })
-  }
-  else {
-    d3.selectAll('.'+d.intersection).each(function() {
-      if (this.tagName.toLowerCase() === 'rect') {
-        d3.select(this).attr('fill', highlightColor);
-      } else if (this.tagName.toLowerCase() === 'path') {
-        d3.select(this).attr('stroke', highlightColor);
+  d3.selectAll('.'+d.intersection).each(function() {
+    if (this.tagName.toLowerCase() === 'rect') {
+      d3.select(this).attr('fill', highlightColor);
+    } else if (this.tagName.toLowerCase() === 'path') {
+      if (this.id === 'violin') {
+        d3.select(this).style('fill', highlightColor);
       } else {
-        d3.select('#'+d.intersection).attr('fill', highlightColor);
+        d3.select(this).attr('stroke', highlightColor);
       }
+
+    } else {
+      d3.select('#'+d.intersection).attr('fill', highlightColor);
+    }
   })
-  }
-
-
-
 }
 
 function handleMouseOut(d) {
-  if (typeof holder == "string") {
-    d3.selectAll('.'+holder).each(function() {
-      if (this.tagName.toLowerCase() === 'rect') {
-        d3.select(this).attr('fill', colorMap(holder));
-      } else if (this.tagName.toLowerCase() === 'path') {
-        d3.select(this).attr('stroke', colorMap(holder));
-      } else {
-        d3.select(this).attr('fill', colorMap(holder));
-      }
-    })
-  }
-
-
   d3.selectAll('.'+d.intersection).each(function() {
     if (this.tagName.toLowerCase() === 'rect') {
       d3.select(this).attr('fill', colorMap(d.intersection));
     } else if (this.tagName.toLowerCase() === 'path') {
-      d3.select(this).attr('stroke', colorMap(d.intersection));
+      if (this.id === 'violin') {
+        d3.select(this).style('fill', colorMap(d.intersection));
+      } else {
+        d3.select(this).attr('stroke', colorMap(d.intersection));
+      }
     } else {
       d3.select('#'+d.intersection).attr('fill', colorMap(d.intersection));
     }
-  })
-  holder = 0
+  });
 }
 
 function handleMouseMove() {
@@ -121,7 +97,10 @@ function handleMouseMove() {
       .style("left", (d3.event.pageX - 34) + "px")
       .style("top", (d3.event.pageY - 12) + "px");
     }
-  }
+}
+
+
+/** * * * * * * RENDERING FUNCTIONS * * * * * * * * */
 
 /**
  * Draws our Walking Travel Time Visualization
@@ -377,7 +356,6 @@ function violin() {
 
   // Read the data and compute summary statistics for each specie
   d3v4.csv("data/costs.csv", function(data) {
-    console.log(data);
     // Build and Show the Y scale
     let y = d3v4.scaleLinear()
       .domain([ 0,20000 ])          // Note that here the Y scale is set manually
@@ -390,6 +368,8 @@ function violin() {
       .attr('y', 10)
       .style('font-size', '14px')
       .style('text-decoration', 'underline');
+
+
 
     let filteredData = [];
     let routes = ['Tremont', 'Jaywalk', 'Crosswalk', 'FlashingSignal', 'PHB'];
@@ -469,7 +449,7 @@ function violin() {
       .attr("id", function(d) { return d.key})
       // .style("fill",function(d){return colorMap(d.key)})
       .on('mouseover', function(d){
-        handleMouseOver(d.key);
+        handleMouseOver({intersection: d.key});
         //let cost = +parseFloat(d.Cost).toFixed(3);
         tooltip
           .style('display', 'inline-block')
@@ -478,17 +458,18 @@ function violin() {
           .style("top", (d3v4.event.pageY - 28) + "px");
       })
       .on('mouseout', function(d){
-        handleMouseOut(d);
+        handleMouseOut({intersection: d.key});
         tooltip.style('display', 'none')
       })
       .on('mousemove', function(d) {
         handleMouseMove(d);
       })
       .append("path")
-      .datum(function(d){return(d.value)})     // So now we are working bin per bin
-      .attr("class", function(d) {return currentInt})
-      .style("stroke", "none")
       .style("fill",function(d){return colorMap(d.key)})
+      .attr("class", function(d) {return d.key})
+      .attr('id', 'violin')
+      .datum(function(d){return(d.value)})     // So now we are working bin per bin
+      .style("stroke", "none")
       .attr("d", d3v4.area()
         .x0(function(d){ return(xNum(-d.length)) } )
         .x1(function(d){ return(xNum(d.length)) } )
@@ -498,10 +479,21 @@ function violin() {
   })
 }
 
+/**
+ * Draw the key box, filter box, add labels and titles where needed
+ */
 function keyAndFilter() {
   let filterBox = d3.select('#vis-svg')
     .append('g')
     .attr('id', 'filter-box');
+
+  d3.select('#vis-svg').append('text')
+    .text('Dollars')
+    .attr('x', 438)
+    .attr('y', 110)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '14px')
+    .attr('transform', `rotate(-90, 438, 110)`);
 
   filterBox
     .append('rect')
@@ -596,6 +588,9 @@ function keyAndFilter() {
   })
 
 }
+
+
+/** * * * * * * * EXECUTIVE METHOD CALLS * * * * * * * * * * * * * * */
 
 /** reads the csv file with walking travel time, waits for it to finish,
  * and then calls a method to draw the bar graph
