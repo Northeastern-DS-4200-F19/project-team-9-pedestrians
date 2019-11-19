@@ -10,6 +10,8 @@ const margin = {
 const tooltip = d3.select('body').append('div')
   .attr('class', 'tooltip')
   .style('display', 'none');
+const highlightColor = "#ffe100";
+
 
 
 /** FILTERING FUNCTIONS */
@@ -37,40 +39,42 @@ function filter(d, data) {
 function colorMap(route) {
   switch(route) {
     case "Tremont":
-      return "#AF2BC6";
+      return "#1D6996";
     case "Jaywalk":
-      return "#8A4DCC";
+      return "#0F8554";
     case "Crosswalk":
-      return "#5EB2D1";
+      return "#E17C05";
     case "FlashingSignal":
-      return "#4AE2BA";
+      return "#CC503E";
     case "PHB":
-      return "#30FF97";
+      return "#994E95";
   }
 }
 
 function handleMouseOver(d) {
+  console.log("d:", d);
   if (typeof d == "string") {
     holder = d;
+    console.log(d3.selectAll('.'+d));
     d3.selectAll('.'+d).each(function() {
       if (this.tagName.toLowerCase() === 'rect') {
-        d3.select(this).attr('fill', 'yellow');
+        d3.select(this).attr('fill', highlightColor);
       } else if (this.tagName.toLowerCase() === 'path') {
-        d3.select(this).attr('stroke', 'yellow');
+        d3.select(this).attr('stroke', highlightColor);
       }
       else {
-        d3.select(this).attr('fill', 'yellow');
+        d3.select(this).attr('fill', highlightColor);
       }
     })
   }
   else {
     d3.selectAll('.'+d.intersection).each(function() {
       if (this.tagName.toLowerCase() === 'rect') {
-        d3.select(this).attr('fill', 'yellow');
+        d3.select(this).attr('fill', highlightColor);
       } else if (this.tagName.toLowerCase() === 'path') {
-        d3.select(this).attr('stroke', 'yellow');
+        d3.select(this).attr('stroke', highlightColor);
       } else {
-        d3.select('#'+d.intersection).attr('fill', 'yellow');
+        d3.select('#'+d.intersection).attr('fill', highlightColor);
       }
   })
   }
@@ -418,7 +422,6 @@ function keyAndFilter() {
   categories.forEach(function(c) {
     keyBox.append('rect')
       .attr('class', function() {
-        console.log(c);
         return c;
       })
       .attr('x', x)
@@ -482,12 +485,12 @@ keyAndFilter();
 
 function violin() {
   // set the dimensions and margins of the graph
-  var margin = {top: 10, right: 30, bottom: 30, left: 40},
+  let margin = {top: 10, right: 30, bottom: 30, left: 40},
       width = 450 - margin.left - margin.right,
       height = 250 - margin.top - margin.bottom;
 
   // append the svg object to the body of the page
-  var svg = d3v4.select("#costsViz")
+  let svg = d3v4.select("#costsViz")
     .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -500,10 +503,10 @@ function violin() {
   d3v4.csv("data/costs.csv", function(data) {
 
     // Build and Show the Y scale
-    var y = d3v4.scaleLinear()
+    let y = d3v4.scaleLinear()
       .domain([ 0,20000 ])          // Note that here the Y scale is set manually
-      .range([height, 0])
-    svg.append("g").call( d3.axisLeft(y) )
+      .range([height, 0]);
+    svg.append("g").call( d3.axisLeft(y) );
 
     svg.append('text')
       .text('Cost')
@@ -513,44 +516,47 @@ function violin() {
       .style('text-decoration', 'underline');
 
     // Build and Show the X scale. It is a band scale like for a boxplot: each group has an dedicated RANGE on the axis. This range has a length of x.bandwidth
-    var x = d3v4.scaleBand()
+    let x = d3v4.scaleBand()
       .range([ 0, width ])
-      .domain(["FlashingSignal", "PHB", "Crosswalk", "Tremont", "Jaywalk"])
-      .padding(0.05)     // This is important: it is the space between 2 groups. 0 means no padding. 1 is the maximum.
+      .domain(["Tremont", "Jaywalk", "Crosswalk", "FlashingSignal", "PHB"])
+      .padding(0.05);// This is important: it is the space between 2 groups. 0 means no padding. 1 is the maximum.
+    
     svg.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3v4.axisBottom(x))
+      .call(d3v4.axisBottom(x));
 
     // Features of the histogram
-    var histogram = d3v4.histogram()
+    let histogram = d3v4.histogram()
           .domain(y.domain())
           .thresholds(y.ticks(40))    // Important: how many bins approx are going to be made? It is the 'resolution' of the violin plot
-          .value(d => d)
+          .value(d => d);
 
     // Compute the binning for each group of the dataset
-    var sumstat = d3v4.nest()  // nest function allows to group the calculation per level of a factor
+    let sumstat = d3v4.nest()  // nest function allows to group the calculation per level of a factor
       .key(function(d) { return d.Countermeasure;})
       .rollup(function(d) {   // For each key..
-        input = d.map(function(g) { return g.Cost;})    // Keep the variable called Sepal_Length
-        bins = histogram(input)   // And compute the binning on it.
+        input = d.map(function(g) { return g.Cost;});  // Keep the variable called Sepal_Length
+        bins = histogram(input); // And compute the binning on it.
         return(bins)
       })
-      .entries(data)
+      .entries(data);
+    
     // What is the biggest number of value in a bin? We need it cause this value will have a width of 100% of the bandwidth.
-    var maxNum = 0
-    for ( i in sumstat ){
-      allBins = sumstat[i].value
-      lengths = allBins.map(function(a){return a.length;})
-      longuest = d3v4.max(lengths)
-      if (longuest > maxNum) { maxNum = longuest }
+    let maxNum = 0;
+    
+    for (let i in sumstat ){
+      let allBins = sumstat[i].value;
+      let lengths = allBins.map(function(a){return a.length;});
+      let longest = d3v4.max(lengths);
+      if (longest > maxNum) { maxNum = longest }
     }
 
     // The maximum width of a violin must be x.bandwidth = the width dedicated to a group
-    var xNum = d3v4.scaleLinear()
+    let xNum = d3v4.scaleLinear()
       .range([0, x.bandwidth()])
-      .domain([-maxNum,maxNum])
+      .domain([-maxNum,maxNum]);
 
-    let currentInt = ""
+    let currentInt = "";
 
     // Add the shape to this svg!
     svg
@@ -558,11 +564,11 @@ function violin() {
       .data(sumstat)
       .enter()        // So now we are working group per group
       .append("g")
-        .attr("transform", function(d){ console.log(d.key); currentInt = d.key; return("translate(" + x(d.key) +" ,0)") } ) // Translation on the right to be at the group position
+        .attr("transform", function(d){currentInt = d.key; return("translate(" + x(d.key) +" ,0)") } ) // Translation on the right to be at the group position
         .attr("intersection", function(d) { return d.key})
         .attr("class", function(d) { return d.key})
         .attr("id", function(d) { return d.key})
-        .style("fill",function(d){return colorMap(d.key)})
+        // .style("fill",function(d){return colorMap(d.key)})
         .on('mouseover', function(d){
           handleMouseOver(d.key);
           //let cost = +parseFloat(d.Cost).toFixed(3);
@@ -581,9 +587,9 @@ function violin() {
         })
       .append("path")
           .datum(function(d){return(d.value)})     // So now we are working bin per bin
-          .attr("intersection", function(d) {return currentInt})
+          .attr("class", function(d) {return currentInt})
           .style("stroke", "none")
-          //.style("fill",function(d){console.log(d);return colorMap(d.intersection)})
+          .style("fill",function(d){return colorMap(d.key)})
           .attr("d", d3v4.area()
               .x0(function(d){ return(xNum(-d.length)) } )
               .x1(function(d){ return(xNum(d.length)) } )
