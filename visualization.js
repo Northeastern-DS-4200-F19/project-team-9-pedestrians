@@ -12,6 +12,11 @@ const tooltip = d3.select('body').append('div')
   .style('display', 'none');
 const highlightColor = "#ffe100";
 
+let inputs = d3.selectAll('input')
+  .on('click', function(){
+    filter(this);
+  });
+
 /**
  * Returns a color based on the route input
  */
@@ -26,14 +31,14 @@ function colorMap(route) {
     case "FlashingSignal":
       return "#b04256";
     case "PHB":
-      return "#994e95";
+      return "#bf6e05";
   }
 }
 
 /** * * * * * * * FILTERING FUNCTIONS * ** * * * * * * **/
 let selectedRoutes = [];
 
-function filter(d, data) {
+function filter(d) {
   let route = d.value;
   let i = selectedRoutes.indexOf(route);
 
@@ -45,7 +50,7 @@ function filter(d, data) {
   d3.select('#walking-times').remove();
   d3.select('#paths').remove();
   d3.select('#cost-svg').remove();
-  travelTimeGraph(data);
+  travelTimeGraph();
   routeMap();
   violin();
 }
@@ -106,124 +111,132 @@ function handleMouseMove() {
  * Draws our Walking Travel Time Visualization
  * @param data - the data read from avg_travel_times.csv
  */
-function travelTimeGraph(data) {
+function travelTimeGraph() {
 
   // define local variables relevant to this viz
   let travelWidth = width/2;
   let travelHeight = height/2;
-  let inputs = d3.selectAll('input')
-    .on('click', function(){
-      filter(this, data);
-    });
 
-  let filteredData = [];
 
-  if (selectedRoutes.length > 0) {
-    data.forEach(function(d){
-      if (selectedRoutes.indexOf(d.intersection) >= 0) {
-        filteredData.push(d);
-      }
-    })
-  } else {
-    filteredData = data;
+  d3.csv('data/avg_travel_times.csv', function(d) {
+    // formats our data objects
+    return {
+      intersection: d.Route,
+      seconds: +d.Average_Travel_Time
+    }
+  }).then(drawChart);
+
+  function drawChart(data) {
+    let filteredData = [];
+
+    if (selectedRoutes.length > 0) {
+      data.forEach(function(d){
+        if (selectedRoutes.indexOf(d.intersection) >= 0) {
+          filteredData.push(d);
+        }
+      })
+    } else {
+      filteredData = data;
+    }
+
+    let maxTime = d3.max(filteredData, function(d){return d.seconds});
+
+    // get the parent SVG
+    let svg = d3.select('#vis-svg')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('border', 1);
+
+
+    // TEMPORARY BORDER FOR VISUAL GUIDE
+    let borderPath = svg.append("rect")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("height", height)
+      .attr("width", width-20)
+      .style("stroke", "black")
+      .style("fill", "none")
+      .style("stroke-width", 1);
+
+
+    // create a local grouping that will contain this entire viz
+    let travelTimeChart = svg.append('g')
+      .attr('width', travelWidth)
+      .attr('height', travelHeight)
+      .attr('transform', `translate(0,0)`)
+      .attr('id', 'walking-times');
+
+
+
+    // Defining our axes
+    let yScale = d3.scaleLinear()
+      .domain([0, maxTime])
+      .range([height-margin.bottom, height-travelHeight+margin.top]);
+
+    let xScale = d3.scaleBand()
+      .range([width-travelWidth+margin.left, width-margin.right])
+      .domain(filteredData.map(function(d){return d.intersection}))
+      .padding(0.05);
+
+    // DRAW the axes
+    travelTimeChart.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', `translate(0,${height-margin.bottom})`)
+      .call(d3.axisBottom(xScale));
+
+    travelTimeChart.append('g')
+      .attr('class', 'y axis')
+      .attr('transform', `translate(${width-travelWidth+margin.left},0)`)
+      .call(d3.axisLeft(yScale));
+
+    // DRAW the histogram
+    let bar = travelTimeChart.selectAll('rect')
+      .data(filteredData)
+      .enter()
+      .append('rect')
+      .attr("x", function(d){return xScale(d.intersection);})
+      .attr("y", function(d){return yScale(d.seconds);})
+      .attr("width", xScale.bandwidth())
+      .attr('fill',function(d){return colorMap(d.intersection)})
+      .attr("height", function(d){
+        return height-margin.bottom-yScale(d.seconds);
+      })
+      .attr('class', function(d){return d.intersection})
+      .on('mouseover', function(d){
+        handleMouseOver(d);
+        let time = +parseFloat(d.seconds).toFixed(3);
+
+        tooltip
+          .style('display', 'inline-block')
+          .html('<strong>' + d.intersection + '</strong>' + '</br>' + time + ' sec')
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on('mouseout', function(d){
+        handleMouseOut(d);
+        tooltip.style('display', 'none')
+      })
+      .on('mousemove', function(d) {
+        handleMouseMove(d);
+      });
+
+    // Add a title and axis labels!
+    travelTimeChart.append('text')
+      .attr('x', width-travelWidth/2)
+      .attr('y', height-travelHeight+35)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '14px')
+      .style('text-decoration', 'underline')
+      .text('Average Walking Time');
+    travelTimeChart.append('text')
+      .attr('x', width-travelWidth)
+      .attr('y', height-travelHeight/2)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '14px')
+      .attr('transform', `rotate(-90, ${width-travelWidth}, ${height-travelHeight/2})`)
+      .text("Seconds");
   }
 
-  let maxTime = d3.max(filteredData, function(d){return d.seconds});
-
-  // get the parent SVG
-  let svg = d3.select('#vis-svg')
-    .attr('width', width)
-    .attr('height', height)
-    .attr('border', 1);
-
-
-  // TEMPORARY BORDER FOR VISUAL GUIDE
-  let borderPath = svg.append("rect")
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("height", height)
-    .attr("width", width-20)
-    .style("stroke", "black")
-    .style("fill", "none")
-    .style("stroke-width", 1);
-
-
-  // create a local grouping that will contain this entire viz
-  let travelTimeChart = svg.append('g')
-    .attr('width', travelWidth)
-    .attr('height', travelHeight)
-    .attr('transform', `translate(0,0)`)
-    .attr('id', 'walking-times');
-
-
-
-  // Defining our axes
-  let yScale = d3.scaleLinear()
-    .domain([0, maxTime])
-    .range([height-margin.bottom, height-travelHeight+margin.top]);
-
-  let xScale = d3.scaleBand()
-    .range([width-travelWidth+margin.left, width-margin.right])
-    .domain(filteredData.map(function(d){return d.intersection}))
-    .padding(0.05);
-
-  // DRAW the axes
-  travelTimeChart.append('g')
-    .attr('class', 'x axis')
-    .attr('transform', `translate(0,${height-margin.bottom})`)
-    .call(d3.axisBottom(xScale));
-
-  travelTimeChart.append('g')
-    .attr('class', 'y axis')
-    .attr('transform', `translate(${width-travelWidth+margin.left},0)`)
-    .call(d3.axisLeft(yScale));
-
-  // DRAW the histogram
-  let bar = travelTimeChart.selectAll('rect')
-    .data(filteredData)
-    .enter()
-    .append('rect')
-    .attr("x", function(d){return xScale(d.intersection);})
-    .attr("y", function(d){return yScale(d.seconds);})
-    .attr("width", xScale.bandwidth())
-    .attr('fill',function(d){return colorMap(d.intersection)})
-    .attr("height", function(d){
-      return height-margin.bottom-yScale(d.seconds);
-    })
-    .attr('class', function(d){return d.intersection})
-    .on('mouseover', function(d){
-      handleMouseOver(d);
-      let time = +parseFloat(d.seconds).toFixed(3);
-
-      tooltip
-        .style('display', 'inline-block')
-        .html('<strong>' + d.intersection + '</strong>' + '</br>' + time + ' sec')
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY - 28) + "px");
-    })
-    .on('mouseout', function(d){
-      handleMouseOut(d);
-      tooltip.style('display', 'none')
-    })
-    .on('mousemove', function(d) {
-      handleMouseMove(d);
-    });
-
-  // Add a title and axis labels!
-  travelTimeChart.append('text')
-    .attr('x', width-travelWidth/2)
-    .attr('y', height-travelHeight+35)
-    .attr('text-anchor', 'middle')
-    .style('font-size', '14px')
-    .style('text-decoration', 'underline')
-    .text('Average Walking Time');
-  travelTimeChart.append('text')
-    .attr('x', width-travelWidth)
-    .attr('y', height-travelHeight/2)
-    .attr('text-anchor', 'middle')
-    .style('font-size', '14px')
-    .attr('transform', `rotate(-90, ${width-travelWidth}, ${height-travelHeight/2})`)
-    .text("Seconds");
 
 }
 
@@ -483,36 +496,36 @@ function violin() {
  * Draw the key box, filter box, add labels and titles where needed
  */
 function keyAndFilter() {
-  let filterBox = d3.select('#vis-svg')
-    .append('g')
-    .attr('id', 'filter-box');
-
-  d3.select('#vis-svg').append('text')
-    .text('Dollars')
-    .attr('x', 438)
-    .attr('y', 110)
-    .attr('text-anchor', 'middle')
-    .style('font-size', '14px')
-    .attr('transform', `rotate(-90, 438, 110)`);
-
-  filterBox
-    .append('rect')
-    .attr('x', 15)
-    .attr('y', 5)
-    .attr('height', 120)
-    .attr('width', 210)
-    .style('stroke', 'black')
-    .style('stroke-width', 1)
-    .style('fill', 'none');
-
-  filterBox
-    .append('text')
-    .text('Filter')
-    .attr('x', 110)
-    .attr('y', 20)
-    .attr('text-anchor', 'middle')
-    .style('font-sie', '14px')
-    .style('text-decoration', 'underline');
+  // let filterBox = d3.select('#vis-svg')
+  //   .append('g')
+  //   .attr('id', 'filter-box');
+  //
+  // d3.select('#vis-svg').append('text')
+  //   .text('Dollars')
+  //   .attr('x', 438)
+  //   .attr('y', 110)
+  //   .attr('text-anchor', 'middle')
+  //   .style('font-size', '14px')
+  //   .attr('transform', `rotate(-90, 438, 110)`);
+  //
+  // filterBox
+  //   .append('rect')
+  //   .attr('x', 15)
+  //   .attr('y', 5)
+  //   .attr('height', 120)
+  //   .attr('width', 210)
+  //   .style('stroke', 'black')
+  //   .style('stroke-width', 1)
+  //   .style('fill', 'none');
+  //
+  // filterBox
+  //   .append('text')
+  //   .text('Filter')
+  //   .attr('x', 110)
+  //   .attr('y', 20)
+  //   .attr('text-anchor', 'middle')
+  //   .style('font-sie', '14px')
+  //   .style('text-decoration', 'underline');
 
   let keyBox = d3.select('#vis-svg')
     .append('g')
@@ -530,7 +543,7 @@ function keyAndFilter() {
 
   keyBox
     .append('text')
-    .text('Key')
+    .text('Filter')
     .attr('x', 110)
     .attr('y', 150)
     .attr('text-anchor', 'middle')
@@ -540,28 +553,46 @@ function keyAndFilter() {
   let x = 20;
   let startY = 165;
 
-  let categories = [];
+  let categories = ['Tremont', 'Jaywalk', 'Crosswalk', 'FlashingSignal', 'PHB'];
 
-  d3.selectAll('.filterButton').each(function() {
-    categories.push(this.value);
-  });
+  // d3.selectAll('.filterButton').each(function() {
+  //   categories.push(this.value);
+  // });
 
   categories.forEach(function(c) {
     keyBox.append('rect')
       .attr('class', function() {
         return c;
       })
+      .attr('id', c + 'key')
       .attr('x', x)
       .attr('y', startY)
       .attr('height', 10)
       .attr('width', 10)
+      .on('click', function() {
+        filter({value: c});
+        console.log(d3.select('#'+c+'key').style('fill'));
+        if (d3.select('#'+c+'key').style('fill') === 'rgb(230, 230, 230)') {
+          console.log('yea');
+          d3.select('#'+c+'key')
+            .style('fill', colorMap(c))
+            .style('stroke', 'none');
+
+        } else {
+          console.log('no');
+          d3.select('#'+c+'key')
+            .style('fill', "#e6e6e6")
+            .style('stroke', 'black');
+        }
+      })
       .on('mouseover', function() {
         handleMouseOver({intersection: c})
       })
       .on('mouseout', function(){
         handleMouseOut({intersection: c});
       })
-      .style('fill', colorMap(c));
+      .style('fill', "#e6e6e6")
+      .style('stroke', 'black');
 
     keyBox.append('text')
       .attr('x', x + 12)
@@ -592,16 +623,9 @@ function keyAndFilter() {
 
 /** * * * * * * * EXECUTIVE METHOD CALLS * * * * * * * * * * * * * * */
 
-/** reads the csv file with walking travel time, waits for it to finish,
- * and then calls a method to draw the bar graph
+/**  draw the bar graph
  */
-d3.csv('data/avg_travel_times.csv', function(d) {
-  // formats our data objects
-  return {
-    intersection: d.Route,
-    seconds: +d.Average_Travel_Time
-  }
-}).then(travelTimeGraph);
+travelTimeGraph();
 
 /**
  * Draw the map of chester square with possible routes overlaid
@@ -617,3 +641,5 @@ keyAndFilter();
  * Draw the violin plot
  */
 violin();
+
+
