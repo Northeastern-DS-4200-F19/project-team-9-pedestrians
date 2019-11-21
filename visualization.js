@@ -17,6 +17,12 @@ let inputs = d3.selectAll('input')
     filter(this);
   });
 
+function roundSeconds(s) {
+  let min = Math.floor(s / 60);
+  let sec = Math.floor(s - (min * 60));
+  return "" + min + "min " + sec + "sec";
+}
+
 /**
  * Returns a color based on the route input
  */
@@ -194,9 +200,21 @@ function travelTimeGraph() {
       .data(filteredData)
       .enter()
       .append('rect')
-      .attr("x", function(d){return xScale(d.intersection);})
+      .attr("x", function(d){
+        if (xScale.bandwidth() > 120) {
+          return (xScale(d.intersection) + xScale.bandwidth()/2) - 60
+        } else {
+          return xScale(d.intersection);
+        }
+      })
       .attr("y", function(d){return yScale(d.seconds);})
-      .attr("width", xScale.bandwidth())
+      .attr("width", function() {
+        if (xScale.bandwidth() > 120) {
+          return 120;
+        } else {
+          return xScale.bandwidth()
+        }
+      })
       .attr('fill',function(d){return colorMap(d.intersection)})
       .attr("height", function(d){
         return height-margin.bottom-yScale(d.seconds);
@@ -208,7 +226,7 @@ function travelTimeGraph() {
 
         tooltip
           .style('display', 'inline-block')
-          .html('<strong>' + d.intersection + '</strong>' + '</br>' + time + ' sec')
+          .html('<strong>' + d.intersection + '</strong>' + '</br>' + roundSeconds(time))
           .style("left", (d3.event.pageX) + "px")
           .style("top", (d3.event.pageY - 28) + "px");
       })
@@ -369,10 +387,33 @@ function violin() {
 
   // Read the data and compute summary statistics for each specie
   d3v4.csv("data/costs.csv", function(data) {
+
+    let filteredData = [];
+    let routes = ['Tremont', 'Jaywalk', 'Crosswalk', 'FlashingSignal', 'PHB'];
+    let domainList = [];
+
+    if (selectedRoutes.length > 0) {
+      data.forEach(function(obj) {
+        if (selectedRoutes.indexOf(obj.Countermeasure) >= 0) {
+          filteredData.push(obj);
+        }
+      });
+      routes.forEach(function(r) {
+        if (selectedRoutes.indexOf(r) >= 0) {
+          domainList.push(r);
+        }
+      });
+    } else {
+      filteredData = data;
+      domainList = routes;
+    }
+    console.log(filteredData);
+    let maxCost = d3.max(filteredData, function(d){return +d.Cost});
+    console.log(maxCost);
     // Build and Show the Y scale
     let y = d3v4.scaleLinear()
-      .domain([ 0,20000 ])          // Note that here the Y scale is set manually
-      .range([height, 0]);
+      .domain([ 0,maxCost ])          // Note that here the Y scale is set manually
+      .range([height, 20]);
     svg.append("g").call( d3.axisLeft(y) );
 
     svg.append('text')
@@ -384,25 +425,7 @@ function violin() {
 
 
 
-    let filteredData = [];
-    let routes = ['Tremont', 'Jaywalk', 'Crosswalk', 'FlashingSignal', 'PHB'];
-    let domainList = [];
 
-    if (selectedRoutes.length > 0) {
-      data.forEach(function(obj) {
-        if (selectedRoutes.indexOf(obj.Countermeasure) >= 0) {
-          filteredData.push(obj);
-        }
-          });
-      routes.forEach(function(r) {
-        if (selectedRoutes.indexOf(r) >= 0) {
-          domainList.push(r);
-        }
-      });
-    } else {
-      filteredData = data;
-      domainList = routes;
-    }
 
 
 
@@ -496,36 +519,6 @@ function violin() {
  * Draw the key box, filter box, add labels and titles where needed
  */
 function keyAndFilter() {
-  // let filterBox = d3.select('#vis-svg')
-  //   .append('g')
-  //   .attr('id', 'filter-box');
-  //
-  // d3.select('#vis-svg').append('text')
-  //   .text('Dollars')
-  //   .attr('x', 438)
-  //   .attr('y', 110)
-  //   .attr('text-anchor', 'middle')
-  //   .style('font-size', '14px')
-  //   .attr('transform', `rotate(-90, 438, 110)`);
-  //
-  // filterBox
-  //   .append('rect')
-  //   .attr('x', 15)
-  //   .attr('y', 5)
-  //   .attr('height', 120)
-  //   .attr('width', 210)
-  //   .style('stroke', 'black')
-  //   .style('stroke-width', 1)
-  //   .style('fill', 'none');
-  //
-  // filterBox
-  //   .append('text')
-  //   .text('Filter')
-  //   .attr('x', 110)
-  //   .attr('y', 20)
-  //   .attr('text-anchor', 'middle')
-  //   .style('font-sie', '14px')
-  //   .style('text-decoration', 'underline');
 
   let keyBox = d3.select('#vis-svg')
     .append('g')
@@ -534,7 +527,7 @@ function keyAndFilter() {
   keyBox
     .append('rect')
     .attr('x', 15)
-    .attr('y', 135)
+    .attr('y', 15)
     .attr('height', 120)
     .attr('width', 210)
     .style('stroke', 'black')
@@ -545,19 +538,15 @@ function keyAndFilter() {
     .append('text')
     .text('Filter')
     .attr('x', 110)
-    .attr('y', 150)
+    .attr('y', 30)
     .attr('text-anchor', 'middle')
     .style('font-size', '14px')
     .style('text-decoration', 'underline');
 
   let x = 20;
-  let startY = 165;
+  let startY = 45;
 
   let categories = ['Tremont', 'Jaywalk', 'Crosswalk', 'FlashingSignal', 'PHB'];
-
-  // d3.selectAll('.filterButton').each(function() {
-  //   categories.push(this.value);
-  // });
 
   categories.forEach(function(c) {
     keyBox.append('rect')
@@ -571,18 +560,15 @@ function keyAndFilter() {
       .attr('width', 10)
       .on('click', function() {
         filter({value: c});
-        console.log(d3.select('#'+c+'key').style('fill'));
         if (d3.select('#'+c+'key').style('fill') === 'rgb(230, 230, 230)') {
-          console.log('yea');
           d3.select('#'+c+'key')
             .style('fill', colorMap(c))
             .style('stroke', 'none');
 
         } else {
-          console.log('no');
           d3.select('#'+c+'key')
             .style('fill', "#e6e6e6")
-            .style('stroke', 'black');
+            .style('stroke', colorMap(c));
         }
       })
       .on('mouseover', function() {
@@ -592,7 +578,7 @@ function keyAndFilter() {
         handleMouseOut({intersection: c});
       })
       .style('fill', "#e6e6e6")
-      .style('stroke', 'black');
+      .style('stroke', colorMap(c));
 
     keyBox.append('text')
       .attr('x', x + 12)
