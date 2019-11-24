@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <!-- Metadata -->
-	<head>
+  <head>
     <meta charset="utf-8">
     
     <!-- Title -->
-		<title>Project Team 9: Pedestrians, DS 4200 F19</title>
+    <title>Project Team 9: Pedestrians, DS 4200 F19</title>
     
     <!-- CSS Styling -->
-		<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
     
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
@@ -19,10 +19,10 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-config" content="/favicons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
-	</head>
+  </head>
   
   <!-- Main page content -->
-	<body>
+  <body>
   
     <!-- Update this with your GitHub repo URL -->
     <span id="forkongithub"><a href="https://github.com/Northeastern-DS-4200-F19/project-team-9-pedestrians">Fork me on GitHub</a></span>
@@ -112,7 +112,8 @@
         aligned axis is the most effective way to relate that information to the user, and using the same colors to
         encode the bars as we did the paths over the map (along with linked highlighting and tooltip labels) unites
         the information from the map with the information from this bar graph.<br><br>
-        <strong>TODO: add writeup of third graph</strong>
+        In the top right corner we have a violin plot that provides information on the distribution of costs of various solutions we felt could effectively connect the parks in a more effective manner than currently is available. The distribution is encoded within the width of the plot at a given point, and the color encodes which route's distribution you are looking at. Using the width it is easy to compare which have distributions that skew higher or lower because they are using the same y scale so it's just a matter of comparing various widths and the height on the y axis of those widths. We liked that this made it easy to get all of the data in perspective unlike a bar graph of just the average or something along those lines.<br><br>
+        In the top left corner we have a key which will highlight whichever route you hover over to make it easy to compare across our various graphs in the visualization, and we also ahve a filter box that allows you to narrow down the scope and more easily compare a smaller number of routes. This is especially helpful for the average walking time, because Tremont raises the number of seconds needed for the graph dramatically which makes it harder to see the differences between all the other options.
       </p>
 
       <h1>Data Analysis</h1>
@@ -128,10 +129,9 @@
         costing about 3.5 times as much to build. However, the higher cost of this crosswalk would be offset by the additional safety,
         where a single potential accident on this road could wipe out all the savings by not placing a signal.
         but this argument could be used to argue that any sort of crosswalk would save money overall, because
-        of time saved by those who would have gone around, and injuries by those who are jaywalking.
+        of time saved by those who would have gone around, and injuries by those who are jaywalking. In general, the boosts in safety and speed are countered to some degree by an increase in cost as well, so the best solution isn't completely cut and dry.
       </p>
 
-      <br><br><strong>TODO: finish this</strong>
 
 
 
@@ -141,9 +141,9 @@
 
       <p><em>Expectation: Clearly describes domain tasks, processes, goals and abstract tasks for domain problems.</em></p>
 
-      <p>We wished to have an interactive map along with some graphs that interact with eachother.
+      <p>We wished to have an interactive map along with graphs of time and cost that will help tell the story of the pros and cons of how best to connect the parks.
         The map will be used to demonstrate distance and give a spacial representation of the walking distance
-        between the parks and walking distance to get between them.
+        between the parks and walking distance to get between them. The reason we wanted to do this was to explore our important domain task of determining which solutions are the most and leas t viable from different perspectives.
       </p>
       <p>
         
@@ -158,7 +158,6 @@
         in an interative manner.
       </p>
       <br><br>
-      <strong>TODO: finish and edit this</strong>
 
 
 
@@ -170,16 +169,16 @@
       Logical discussion of design choices grounded in theory from course.
       Discusses feedback from usability testing.</em></p>
       <p>
-        The first thing we worked on was setting a goal for what we wanted to do.
-        We then collected data over the course of several days. This included standing at the intersections,
+        The first thing we worked on was setting a goal for what we wanted to do. This included planning out what data we intended to collect for our project.
+        We then collected data over the course of several days based on the plans we had made. This included standing at the intersections,
         counting how many people were crossing and in what manner. We also timed ourselves and others
         to see how long it takes to get to one side of the park to the other.
         We also sat at a crosswalk intersection for a half hour each to tally how many people were not following
-        the walking signals vs how many people did follow the signals.
+        the walking signals vs how many people did follow the signals. Some of this collection was improvising as we realized a potentially valuable avenue for exploration in the moment and wanted to make sure we put our best foot forward.
       </p>
       <p>
       Once we gathered the data, we moved on to create prototypes that would utilize our data.
-      We did not show all the data in our visualization, but gathering an abundance of data
+      We did not show all the data in our visualization, as some of that data wasn't going to fit in well with the rest, but gathering an abundance of data
       was useful in having a good selection to choose from when in came time to creating the visualization
       as well as using a combination of data to create new data based on our observations about the links.
       </p>
@@ -187,15 +186,10 @@
         The sketch prototypes were useful for gauging what types of visualizations worked and which ones did not.
         from this, we moved on to create a digital prototype of the sketch using PowerPoint. PowerPoint proved
         to be useful as a easier to manipulate tool that was able to express a degree of interaction using slides
-        with demo interactions.
-      </p>
-      <p>
-        Afterwards, we were left with the actual webpage to create the visualizations along with the descriptions
+        with demo interactions. Afterwards, we were left with the actual webpage to create the visualizations along with the descriptions
         of what are goals are, and what we wished to do with the data and visualizations, which is what this page is.
       </p>
 
-
-      <strong>TODO: DO THIS</strong>
 
 
       <h1>Conclusion</h1>
@@ -204,7 +198,9 @@
       
       <p><em>Expectation: Meaningfully wraps up project and has good future directions.</em></p>
 
-      <strong>TODO: DO THIS</strong>
+      <p>Over the course of this project we have spent a lot of time on planning data collection, implementing that data collection and acting that out. The primary focus has been on the lack of ease of use of the park - there is not effective way to cross from one side of the park to the other. If we could go back and improve we would try and collect data that would better interact - what we ended up with provides interesting results, but doesn't allow for as complex of a visualization as we would have liked. This would make for a more engaging outcome.<br>
+        <br>
+      Going forward, this should shift more towards the aspect of safety. We tried to provide it some focus but it wasn't the main emphasis of our visualization, that was the time aspect. This would provide another important factor in comparing different solutions. Additionally, it would make sense to investigate the effects our solutions could have on commuters - how would the addition of these potential delays slow down traffic? These and other questions would be important to answer. From there we would expect things to shift more towards making a final decision on the best solution.</p>
 
       
       <h1>Acknowledgements</h1>
@@ -220,7 +216,6 @@
         <li><a href="https://www.dashingd3js.com/svg-paths-and-d3js">SVG Paths and D3.js</a> on dashingd3js.com</li>
         <li><a href="https://bl.ocks.org/mbostock/1087001">Absolute-Positioned Tooltip</a> by Mike Bostock</li>
         <li><a href="http://bl.ocks.org/milroc/4254604">selection.each example</a> by Miles McCrocklin</li>
-        <li><a href="https://carto.com/carto-colors/">Color Palette</a> by carto.com</li>
       </ul>
     </div>
     
@@ -231,11 +226,11 @@
       window.d3 = null
       // console.log('v4', d3v4.version)
     </script>
-		<script src="lib/d3.v5.12.0/d3.min.js"></script>
+    <script src="lib/d3.v5.12.0/d3.min.js"></script>
     <script>
       // console.log('v4', d3v4.version)
       // console.log('v4', d3.version)
     </script>
-		<script src="visualization.js"></script>
-	</body>
+    <script src="visualization.js"></script>
+  </body>
 </html>
