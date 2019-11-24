@@ -370,7 +370,7 @@ function routeMap() {
  */
 function violin() {
   // set the dimensions and margins of the graph
-  let margin = {top: 10, right: 30, bottom: 30, left: 40},
+  let margin = {top: 10, right: 30, bottom: 30, left: 60},
     width = 450 - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
@@ -443,7 +443,8 @@ function violin() {
     // Features of the histogram
     let histogram = d3v4.histogram()
       .domain(y.domain())
-      .thresholds(y.ticks(40))    // Important: how many bins approx are going to be made? It is the 'resolution' of the violin plot
+      .thresholds(y.ticks(20))    // Important: how many bins approx are going to be made? It is the 'resolution' of
+      // the violin plot
       .value(d => d);
 
     // Compute the binning for each group of the dataset
@@ -523,6 +524,18 @@ function keyAndFilter() {
   let keyBox = d3.select('#vis-svg')
     .append('g')
     .attr('id', 'key-box');
+
+  let dollarX = 450;
+  let dollarY = 130;
+
+  d3.select('#vis-svg')
+    .append('text')
+    .text('Dollars')
+    .style('font-size', '14px')
+    .attr('text-anchor', 'middle')
+    .attr('x', dollarX)
+    .attr('y', dollarY)
+    .attr('transform', `rotate(-90, ${dollarX}, ${dollarY})`);
 
   keyBox
     .append('rect')
