@@ -409,6 +409,15 @@ function violin() {
     }
     console.log(filteredData);
     let maxCost = d3.max(filteredData, function(d){return +d.Cost});
+    function getMean(str) {
+      if (str == "Crosswalk") {
+        return Math.round(d3.mean(filteredData,function(d) { if (d.Countermeasure == "Crosswalk") {return +d.Cost}}))
+      } else if (str == "FlashingSignal") {
+        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "FlashingSignal") {return +d.Cost}}))
+      } else if (str == "PHB") {
+        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "PHB") {return +d.Cost}}))
+      }
+    }
     console.log(maxCost);
     // Build and Show the Y scale
     let y = d3v4.scaleLinear()
@@ -490,7 +499,7 @@ function violin() {
         //let cost = +parseFloat(d.Cost).toFixed(3);
         tooltip
           .style('display', 'inline-block')
-          .html('<strong>' + d.key + '</strong>')// + '</br>' + time + ' sec')
+          .html('<strong>' + d.key + '<br>Average: $' + getMean(d.key) + '</strong>')// + '</br>' + time + ' sec')
           .style("left", (d3v4.event.pageX) + "px")
           .style("top", (d3v4.event.pageY - 28) + "px");
       })
