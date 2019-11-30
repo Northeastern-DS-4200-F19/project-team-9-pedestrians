@@ -352,7 +352,6 @@ function routeMap() {
           .style('display', 'none');
       })
       .on('mousemove', handleMouseMove)
-      // .style('stroke-dasharray', ('5, 5, 5, 5, 5, 5, 10, 5, 10, 5, 10, 5'))
   }
 
   map.append('text')
@@ -407,7 +406,7 @@ function violin() {
       filteredData = data;
       domainList = routes;
     }
-    console.log(filteredData);
+
     let maxCost = d3.max(filteredData, function(d){return +d.Cost});
     function getMean(str) {
       if (str == "Crosswalk") {
@@ -418,7 +417,7 @@ function violin() {
         return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "PHB") {return +d.Cost}}))
       }
     }
-    console.log(maxCost);
+
     // Build and Show the Y scale
     let y = d3v4.scaleLinear()
       .domain([ 0,maxCost ])          // Note that here the Y scale is set manually
@@ -431,13 +430,6 @@ function violin() {
       .attr('y', 10)
       .style('font-size', '14px')
       .style('text-decoration', 'underline');
-
-
-
-
-
-
-
 
     // Build and Show the X scale. It is a band scale like for a boxplot: each group has an dedicated RANGE on the axis. This range has a length of x.bandwidth
     let x = d3v4.scaleBand()
