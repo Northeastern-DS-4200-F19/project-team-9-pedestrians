@@ -369,7 +369,7 @@ function routeMap() {
  */
 function violin() {
   // set the dimensions and margins of the graph
-  let margin = {top: 10, right: 30, bottom: 30, left: 60},
+  let margin = {top: 10, right: 30, bottom: 30, left: 40},
     width = 450 - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
