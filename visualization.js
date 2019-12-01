@@ -41,6 +41,21 @@ function colorMap(route) {
   }
 }
 
+function colorMap2(route) {
+  switch(route) {
+    case "Tremont":
+      return "#FFFFFF";
+    case "Jaywalk":
+      return "#FFFFFF";
+    case "Crosswalk":
+      return "#edad08";
+    case "FlashingSignal":
+      return "#b04256";
+    case "PHB":
+      return "#bf6e05";
+  }
+}
+
 /** * * * * * * * FILTERING FUNCTIONS * ** * * * * * * **/
 let selectedRoutes = [];
 
@@ -86,7 +101,7 @@ function handleMouseOut(d) {
       d3.select(this).attr('fill', colorMap(d.intersection));
     } else if (this.tagName.toLowerCase() === 'path') {
       if (this.id === 'violin') {
-        d3.select(this).style('fill', colorMap(d.intersection));
+        d3.select(this).style('fill', colorMap2(d.intersection));
       } else {
         d3.select(this).attr('stroke', colorMap(d.intersection));
       }
@@ -410,12 +425,15 @@ function violin() {
     let maxCost = d3.max(filteredData, function(d){return +d.Cost});
     function getMean(str) {
       if (str == "Crosswalk") {
-        return Math.round(d3.mean(filteredData,function(d) { if (d.Countermeasure == "Crosswalk") {return +d.Cost}}))
+        return Math.round(d3.mean(filteredData,function(d) { if (d.Countermeasure == "Crosswalk") {return +d.Cost*1000}}))
       } else if (str == "FlashingSignal") {
-        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "FlashingSignal") {return +d.Cost}}))
+        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "FlashingSignal") {return +d.Cost*1000}}))
       } else if (str == "PHB") {
-        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "PHB") {return +d.Cost}}))
+        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "PHB") {return +d.Cost*1000}}))
+      } else {
+        return 0
       }
+
     }
     console.log(maxCost);
     // Build and Show the Y scale
@@ -508,7 +526,7 @@ function violin() {
         handleMouseMove(d);
       })
       .append("path")
-      .style("fill",function(d){return colorMap(d.key)})
+      .style("fill",function(d){return colorMap2(d.key)})
       .attr("class", function(d) {return d.key})
       .attr('id', 'violin')
       .datum(function(d){return(d.value)})     // So now we are working bin per bin
