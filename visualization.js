@@ -385,7 +385,7 @@ function violin() {
       "translate(" + margin.left + "," + margin.top + ")");
 
   // Read the data and compute summary statistics for each specie
-  d3v4.csv("data/costs.csv", function(data) {
+  d3v4.csv("data/costs2.csv", function(data) {
 
     let filteredData = [];
     let routes = ['Tremont', 'Jaywalk', 'Crosswalk', 'FlashingSignal', 'PHB'];
@@ -536,7 +536,7 @@ function keyAndFilter() {
 
   d3.select('#vis-svg')
     .append('text')
-    .text('Dollars')
+    .text('Dollars (Thousands)')
     .style('font-size', '14px')
     .attr('text-anchor', 'middle')
     .attr('x', dollarX)
