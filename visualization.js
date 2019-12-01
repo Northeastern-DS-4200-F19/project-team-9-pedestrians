@@ -352,7 +352,6 @@ function routeMap() {
           .style('display', 'none');
       })
       .on('mousemove', handleMouseMove)
-      // .style('stroke-dasharray', ('5, 5, 5, 5, 5, 5, 10, 5, 10, 5, 10, 5'))
   }
 
   map.append('text')
@@ -493,13 +492,11 @@ function violin() {
       .attr("intersection", function(d) { return d.key})
       .attr("class", function(d) { return d.key})
       .attr("id", function(d) { return d.key})
-      // .style("fill",function(d){return colorMap(d.key)})
       .on('mouseover', function(d){
         handleMouseOver({intersection: d.key});
-        //let cost = +parseFloat(d.Cost).toFixed(3);
         tooltip
           .style('display', 'inline-block')
-          .html('<strong>' + d.key + '<br>Average: $' + getMean(d.key) + '</strong>')// + '</br>' + time + ' sec')
+          .html('<strong>' + d.key + '<br>Average: $' + getMean(d.key) + '</strong>')
           .style("left", (d3v4.event.pageX) + "px")
           .style("top", (d3v4.event.pageY - 28) + "px");
       })

@@ -84,7 +84,7 @@
 
         <source src="files/DS_4200_F19_Team_9_-_Demo_Video.mp4" type="video/mp4">
         <p>Your browser doesn't support HTML5 video. Here is
-         a <a href="http://www.ccs.neu.edu/home/cody/courses/shared/d3-flexible-transitions.mp4">link to the video</a> instead.</p>
+         a <a href="files/DS_4200_F19_Team_9_-_Demo_Video.mp4">link to the video</a> instead.</p>
       </video>
 
       <h1>Visualization explanation</h1>
@@ -223,13 +223,17 @@
     <script>
       d3v4 = d3;
       window.d3 = null
-      // console.log('v4', d3v4.version)
     </script>
     <script src="lib/d3.v5.12.0/d3.min.js"></script>
-    <script>
-      // console.log('v4', d3v4.version)
-      // console.log('v4', d3.version)
-    </script>
     <script src="visualization.js"></script>
+    <!-- from https://stackoverflow.com/questions/24861073/detect-if-any-kind-of-ie-msie -->
+    <!-- Check if Internet Explorer -->
+    <script>
+    var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+
+    if(isIE){
+    alert("Internet Explorer is not supported. Visualizations will not work."); 
+    }
+    </script>
   </body>
 </html>
