@@ -10,7 +10,7 @@ const margin = {
 const tooltip = d3.select('body').append('div')
   .attr('class', 'tooltip')
   .style('display', 'none');
-const highlightColor = "#ffe100";
+const highlightColor = "#ff0040";
 
 let inputs = d3.selectAll('input')
   .on('click', function(){
@@ -80,33 +80,37 @@ function filter(d) {
 /** * * * * * * * * MOUSE EVENTS * * * * * * * * * */
 function handleMouseOver(d) {
   d3.selectAll('.'+d.intersection).each(function() {
-    if (this.tagName.toLowerCase() === 'rect') {
-      d3.select(this).attr('fill', highlightColor);
-    } else if (this.tagName.toLowerCase() === 'path') {
-      if (this.id === 'violin') {
-        d3.select(this).style('fill', highlightColor);
-      } else {
-        d3.select(this).attr('stroke', highlightColor);
-      }
+    if(d3.select(this).attr('id') !== 'hitbox') {
+      if (this.tagName.toLowerCase() === 'rect') {
+        d3.select(this).attr('fill', highlightColor);
+      } else if (this.tagName.toLowerCase() === 'path') {
+        if (this.id === 'violin') {
+          d3.select(this).style('fill', highlightColor);
+        } else {
+          d3.select(this).attr('stroke', highlightColor);
+        }
 
-    } else {
-      d3.select('#'+d.intersection).attr('fill', highlightColor);
+      } else {
+        d3.select('#'+d.intersection).attr('fill', highlightColor);
+      }
     }
   })
 }
 
 function handleMouseOut(d) {
   d3.selectAll('.'+d.intersection).each(function() {
-    if (this.tagName.toLowerCase() === 'rect') {
-      d3.select(this).attr('fill', colorMap(d.intersection));
-    } else if (this.tagName.toLowerCase() === 'path') {
-      if (this.id === 'violin') {
-        d3.select(this).style('fill', colorMap2(d.intersection));
+    if (d3.select(this).attr('id') !== 'hitbox') {
+      if (this.tagName.toLowerCase() === 'rect') {
+        d3.select(this).attr('fill', colorMap(d.intersection));
+      } else if (this.tagName.toLowerCase() === 'path') {
+        if (this.id === 'violin') {
+          d3.select(this).style('fill', colorMap2(d.intersection));
+        } else {
+          d3.select(this).attr('stroke', colorMap(d.intersection));
+        }
       } else {
-        d3.select(this).attr('stroke', colorMap(d.intersection));
+        d3.select('#'+d.intersection).attr('fill', colorMap(d.intersection));
       }
-    } else {
-      d3.select('#'+d.intersection).attr('fill', colorMap(d.intersection));
     }
   });
 }
@@ -294,21 +298,21 @@ function routeMap() {
     .attr('id', 'paths');
 
   let newCrossingData = {
-    'one': [{x:mapWidth/2-18, y:mapHeight/2-24}, {x:mapWidth/2+10, y:mapHeight/2-24},
-      {x:mapWidth/2+10, y:mapHeight/2-20}, {x:mapWidth/2-18, y:mapHeight/2-20},
-      {x:mapWidth/2-18, y:mapHeight/2-24}],
-    'two': [{x:mapWidth/2-18, y:mapHeight/2-16}, {x:mapWidth/2+10, y:mapHeight/2-16},
-      {x:mapWidth/2+10, y:mapHeight/2-12}, {x:mapWidth/2-18, y:mapHeight/2-12},
-      {x:mapWidth/2-18, y:mapHeight/2-16}],
-    'three': [{x:mapWidth/2-18, y:mapHeight/2-8}, {x:mapWidth/2+10, y:mapHeight/2-8},
-      {x:mapWidth/2+10, y:mapHeight/2-4}, {x:mapWidth/2-18, y:mapHeight/2-4},
-      {x:mapWidth/2-18, y:mapHeight/2-8}],
-    'four': [{x:mapWidth/2-18, y:mapHeight/2}, {x:mapWidth/2+10, y:mapHeight/2},
-      {x:mapWidth/2+10, y:mapHeight/2+4}, {x:mapWidth/2-18, y:mapHeight/2+4},
-      {x:mapWidth/2-18, y:mapHeight/2}],
-    'five': [{x:mapWidth/2-18, y:mapHeight/2+8}, {x:mapWidth/2+10, y:mapHeight/2+8},
-      {x:mapWidth/2+10, y:mapHeight/2+12}, {x:mapWidth/2-18, y:mapHeight/2+12},
-      {x:mapWidth/2-18, y:mapHeight/2+8}]
+    'one': [{x:mapWidth/2-22, y:mapHeight/2-24}, {x:mapWidth/2+10, y:mapHeight/2-24},
+      {x:mapWidth/2+10, y:mapHeight/2-20}, {x:mapWidth/2-22, y:mapHeight/2-20},
+      {x:mapWidth/2-22, y:mapHeight/2-24}],
+    'two': [{x:mapWidth/2-22, y:mapHeight/2-16}, {x:mapWidth/2+10, y:mapHeight/2-16},
+      {x:mapWidth/2+10, y:mapHeight/2-12}, {x:mapWidth/2-22, y:mapHeight/2-12},
+      {x:mapWidth/2-22, y:mapHeight/2-16}],
+    'three': [{x:mapWidth/2-22, y:mapHeight/2-8}, {x:mapWidth/2+10, y:mapHeight/2-8},
+      {x:mapWidth/2+10, y:mapHeight/2-4}, {x:mapWidth/2-22, y:mapHeight/2-4},
+      {x:mapWidth/2-22, y:mapHeight/2-8}],
+    'four': [{x:mapWidth/2-22, y:mapHeight/2}, {x:mapWidth/2+10, y:mapHeight/2},
+      {x:mapWidth/2+10, y:mapHeight/2+4}, {x:mapWidth/2-22, y:mapHeight/2+4},
+      {x:mapWidth/2-22, y:mapHeight/2}],
+    'five': [{x:mapWidth/2-22, y:mapHeight/2+8}, {x:mapWidth/2+10, y:mapHeight/2+8},
+      {x:mapWidth/2+10, y:mapHeight/2+12}, {x:mapWidth/2-22, y:mapHeight/2+12},
+      {x:mapWidth/2-22, y:mapHeight/2+8}]
   };
 
   for (let path in newCrossingData) {
@@ -325,9 +329,9 @@ function routeMap() {
     'Tremont': [{x:mapWidth/2 - 4, y:mapHeight/2 + 20},{x:mapWidth/2 - 160, y:mapHeight/2+20},
       {x:mapWidth/2-160, y:mapHeight/2-35}, {x:mapWidth/2-4, y:mapHeight/2-35}],
     'Jaywalk': [{x:mapWidth/2-40, y:mapHeight/2+15}, {x:mapWidth/2-40, y:mapHeight/2-30}],
-    'Crosswalk': [{x:mapWidth/2-10, y:mapHeight/2+15}, {x:mapWidth/2-10, y:mapHeight/2-30}],
+    'Crosswalk': [{x:mapWidth/2-15, y:mapHeight/2+15}, {x:mapWidth/2-15, y:mapHeight/2-30}],
     'FlashingSignal': [{x:mapWidth/2-5, y:mapHeight/2+15}, {x:mapWidth/2-5, y:mapHeight/2-30}],
-    'PHB': [{x:mapWidth/2, y:mapHeight/2+15}, {x:mapWidth/2, y:mapHeight/2-30}]
+    'PHB': [{x:mapWidth/2 + 5, y:mapHeight/2+15}, {x:mapWidth/2 + 5, y:mapHeight/2-30}]
   };
 
   let filteredPathData = {};
@@ -348,9 +352,18 @@ function routeMap() {
       .datum(filteredPathData[path])
       .attr('d', lineFunction)
       .attr('stroke', function(){return colorMap(path)})
-      .attr('stroke-width', 3)
+      .attr('stroke-width', 4)
+      .attr('fill', 'none')
+      .attr('class', path);
+
+    map.append('path')
+      .datum(filteredPathData[path])
+      .attr('d', lineFunction)
+      .attr('stroke', 'transparent')
+      .attr('stroke-width', 10)
       .attr('fill', 'none')
       .attr('class', path)
+      .attr('id', 'hitbox')
       .on('mouseover', function(){
         handleMouseOver({intersection: path});
 
@@ -366,7 +379,7 @@ function routeMap() {
         tooltip
           .style('display', 'none');
       })
-      .on('mousemove', handleMouseMove)
+      .on('mousemove', handleMouseMove);
   }
 
   map.append('text')
