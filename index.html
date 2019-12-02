@@ -60,7 +60,7 @@
     
 
 
-    <div class="vis-holder">
+    <div class="vis-holder" style="max-width:900px; margin: auto;">
 
       <!-- Change viewbox to whatever you want, e.g. "0 0 1000 6000" This determines your aspect ratio and coordinate system -->    
       <!-- Delete all the sample SVG code below after the viewbox to before the closing tag. Populate this part of the SVG with D3. -->
@@ -82,9 +82,9 @@
 
       <video controls width="700">
 
-        <source src="files/DS%204200%20F19%20Team%209%20-%20Demo%20Video.mp4" type="video/mp4">
+        <source src="files/DS_4200_F19_Team_9_-_Demo_Video.mp4" type="video/mp4">
         <p>Your browser doesn't support HTML5 video. Here is
-         a <a href="http://www.ccs.neu.edu/home/cody/courses/shared/d3-flexible-transitions.mp4">link to the video</a> instead.</p>
+         a <a href="files/DS_4200_F19_Team_9_-_Demo_Video.mp4">link to the video</a> instead.</p>
       </video>
 
       <h1>Visualization explanation</h1>
@@ -223,13 +223,17 @@
     <script>
       d3v4 = d3;
       window.d3 = null
-      // console.log('v4', d3v4.version)
     </script>
     <script src="lib/d3.v5.12.0/d3.min.js"></script>
-    <script>
-      // console.log('v4', d3v4.version)
-      // console.log('v4', d3.version)
-    </script>
     <script src="visualization.js"></script>
+    <!-- from https://stackoverflow.com/questions/24861073/detect-if-any-kind-of-ie-msie -->
+    <!-- Check if Internet Explorer -->
+    <script>
+    var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+
+    if(isIE){
+    alert("Internet Explorer is not supported. Visualizations will not work."); 
+    }
+    </script>
   </body>
 </html>

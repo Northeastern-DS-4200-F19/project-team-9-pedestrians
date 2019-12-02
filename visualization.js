@@ -41,6 +41,21 @@ function colorMap(route) {
   }
 }
 
+function colorMap2(route) {
+  switch(route) {
+    case "Tremont":
+      return "#FFFFFF";
+    case "Jaywalk":
+      return "#FFFFFF";
+    case "Crosswalk":
+      return "#edad08";
+    case "FlashingSignal":
+      return "#b04256";
+    case "PHB":
+      return "#bf6e05";
+  }
+}
+
 /** * * * * * * * FILTERING FUNCTIONS * ** * * * * * * **/
 let selectedRoutes = [];
 
@@ -86,7 +101,7 @@ function handleMouseOut(d) {
       d3.select(this).attr('fill', colorMap(d.intersection));
     } else if (this.tagName.toLowerCase() === 'path') {
       if (this.id === 'violin') {
-        d3.select(this).style('fill', colorMap(d.intersection));
+        d3.select(this).style('fill', colorMap2(d.intersection));
       } else {
         d3.select(this).attr('stroke', colorMap(d.intersection));
       }
@@ -369,7 +384,7 @@ function routeMap() {
  */
 function violin() {
   // set the dimensions and margins of the graph
-  let margin = {top: 10, right: 30, bottom: 30, left: 60},
+  let margin = {top: 10, right: 30, bottom: 30, left: 40},
     width = 450 - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
@@ -385,7 +400,7 @@ function violin() {
       "translate(" + margin.left + "," + margin.top + ")");
 
   // Read the data and compute summary statistics for each specie
-  d3v4.csv("data/costs.csv", function(data) {
+  d3v4.csv("data/costs2.csv", function(data) {
 
     let filteredData = [];
     let routes = ['Tremont', 'Jaywalk', 'Crosswalk', 'FlashingSignal', 'PHB'];
@@ -410,12 +425,15 @@ function violin() {
     let maxCost = d3.max(filteredData, function(d){return +d.Cost});
     function getMean(str) {
       if (str == "Crosswalk") {
-        return Math.round(d3.mean(filteredData,function(d) { if (d.Countermeasure == "Crosswalk") {return +d.Cost}}))
+        return Math.round(d3.mean(filteredData,function(d) { if (d.Countermeasure == "Crosswalk") {return +d.Cost*1000}}))
       } else if (str == "FlashingSignal") {
-        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "FlashingSignal") {return +d.Cost}}))
+        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "FlashingSignal") {return +d.Cost*1000}}))
       } else if (str == "PHB") {
-        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "PHB") {return +d.Cost}}))
+        return Math.round(d3.mean(filteredData,function(d) {  if (d.Countermeasure == "PHB") {return +d.Cost*1000}}))
+      } else {
+        return 0
       }
+
     }
 
     // Build and Show the Y scale
@@ -485,13 +503,11 @@ function violin() {
       .attr("intersection", function(d) { return d.key})
       .attr("class", function(d) { return d.key})
       .attr("id", function(d) { return d.key})
-      // .style("fill",function(d){return colorMap(d.key)})
       .on('mouseover', function(d){
         handleMouseOver({intersection: d.key});
-        //let cost = +parseFloat(d.Cost).toFixed(3);
         tooltip
           .style('display', 'inline-block')
-          .html('<strong>' + d.key + '<br>Average: $' + getMean(d.key) + '</strong>')// + '</br>' + time + ' sec')
+          .html('<strong>' + d.key + '<br>Average: $' + getMean(d.key) + '</strong>')
           .style("left", (d3v4.event.pageX) + "px")
           .style("top", (d3v4.event.pageY - 28) + "px");
       })
@@ -503,7 +519,7 @@ function violin() {
         handleMouseMove(d);
       })
       .append("path")
-      .style("fill",function(d){return colorMap(d.key)})
+      .style("fill",function(d){return colorMap2(d.key)})
       .attr("class", function(d) {return d.key})
       .attr('id', 'violin')
       .datum(function(d){return(d.value)})     // So now we are working bin per bin
@@ -531,7 +547,7 @@ function keyAndFilter() {
 
   d3.select('#vis-svg')
     .append('text')
-    .text('Dollars')
+    .text('Dollars (Thousands)')
     .style('font-size', '14px')
     .attr('text-anchor', 'middle')
     .attr('x', dollarX)
