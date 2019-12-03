@@ -502,6 +502,7 @@ function violin() {
 
     // The maximum width of a violin must be x.bandwidth = the width dedicated to a group
     violinWidth = Math.min(x.bandwidth(), 120)
+    //leftover variable used to adjust x location of violin
     if (domainList.length == 1) {
       leftover = x.bandwidth() - 232
     } else if (domainList.length == 2) {
@@ -550,8 +551,20 @@ function violin() {
       .datum(function(d){return(d.value)})     // So now we are working bin per bin
       .style("stroke", "none")
       .attr("d", d3v4.area()
-        .x0(function(d){ console.log(xNum(-d.length));return(xNum(-d.length) + leftover) } )
-        .x1(function(d){ return(xNum(d.length) + leftover) } )
+        .x0(function(d){ 
+          if (x.bandwidth() > 120) {
+            return(xNum(d.length) + x.bandwidth()/2 - 60) 
+          } else {
+            return(xNum(d.length))
+          }
+        })
+        .x1(function(d){ 
+          if (x.bandwidth() > 120) {
+            return(xNum(-d.length) + x.bandwidth()/2 - 60) 
+          } else {
+            return(xNum(-d.length))
+          }
+        } )
         .y(function(d){ return(y(d.x0)) } )
         .curve(d3v4.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
       )
