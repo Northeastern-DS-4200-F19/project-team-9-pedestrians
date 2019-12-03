@@ -89,3 +89,12 @@ div.tooltip {
 	background: #ddd;
 	pointer-events: none;
 }
+img {
+	max-width: 500px;
+}
+
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+	padding: 5px;
+}
