@@ -395,6 +395,7 @@ function routeMap() {
 /**
  * Draw the violin plot to show cost distribution of projects
  */
+ // based on code from https://www.d3-graph-gallery.com/graph/violin_basicHist.html
 function violin() {
   // set the dimensions and margins of the graph
   let margin = {top: 10, right: 30, bottom: 30, left: 40},
@@ -500,8 +501,19 @@ function violin() {
     }
 
     // The maximum width of a violin must be x.bandwidth = the width dedicated to a group
+    violinWidth = Math.min(x.bandwidth(), 120)
+    if (domainList.length == 1) {
+      leftover = x.bandwidth() - 232
+    } else if (domainList.length == 2) {
+      leftover = x.bandwidth() - 148
+    } else {
+      leftover = 0
+    }
+    if (leftover < 0) {
+      leftover = 0
+    }
     let xNum = d3v4.scaleLinear()
-      .range([0, x.bandwidth()])
+      .range([0, violinWidth])
       .domain([-maxNum,maxNum]);
 
     let currentInt = "";
@@ -538,8 +550,8 @@ function violin() {
       .datum(function(d){return(d.value)})     // So now we are working bin per bin
       .style("stroke", "none")
       .attr("d", d3v4.area()
-        .x0(function(d){ return(xNum(-d.length)) } )
-        .x1(function(d){ return(xNum(d.length)) } )
+        .x0(function(d){ console.log(xNum(-d.length));return(xNum(-d.length) + leftover) } )
+        .x1(function(d){ return(xNum(d.length) + leftover) } )
         .y(function(d){ return(y(d.x0)) } )
         .curve(d3v4.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
       )
