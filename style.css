@@ -17,8 +17,12 @@ h1, h2, h3 {
 
 /* But your visualization should be full-width and full-height */
 .vis-holder {
-  width: 100%;
-  height: 100%;
+  	width: 100%;
+  	height: 100%;
+}
+
+#vis-svg {
+	width: 100%;
 }
 
 /* Fork on GitHub ribbon via https://codepo8.github.io/css-fork-on-github-ribbon/# */
